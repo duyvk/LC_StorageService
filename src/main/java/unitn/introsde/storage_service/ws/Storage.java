@@ -19,6 +19,9 @@ public interface Storage {
 	public int addUser(@WebParam(name="user") User user);
 	
 	@WebMethod(operationName = "updateUser")
-	public int updateUser(@WebParam(name="usre") User user);
+	public int updateUser(@WebParam(name="user") User user);
+	
+	@WebMethod(operationName = "removeUser")
+	public int removeUser (@WebParam(name="user_id") int user_id);
 
 }

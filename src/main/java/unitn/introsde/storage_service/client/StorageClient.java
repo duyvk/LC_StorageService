@@ -56,8 +56,14 @@ public class StorageClient {
 		updatedUser.setUserId(52);
 		updatedUser.setUserEmail("duyvk142@gmail.com");
 		System.out.println(updatedUser.getUserEmail());
-		System.out.println(storage.updateUser(updatedUser));
+		try{
+			System.out.println(storage.updateUser(updatedUser));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		System.out.println(storage.getUserById(updatedUser.getUserId()).getUserEmail());
 		
+		// test remove user
+		System.out.println(storage.removeUser(151));
 	}
 }

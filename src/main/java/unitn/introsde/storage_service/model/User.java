@@ -119,65 +119,79 @@ public static User addUser(User user){
 	
 	// to-do : check the data of user is null or not. return null if ..
 	// check birthdate format
+	
 	if (user == null)
+		return null;
+	if (user.getUserFirstName() == null)
+		return null;
+	if (user.getUserLastName() == null)
 		return null;
 	if (user.getUserGender() == null)
 		return null;
+	if (user.getUserEmail() == null)
+		return null;
+	if (user.getUserBirthDate() == null)
+		return null;
+	
 	EntityManager em = DBHelper.instance.createEntityManager();
+	
 	EntityTransaction tx = em.getTransaction();
-
 	tx.begin();
 	em.persist(user);
 	tx.commit();
+	
     DBHelper.instance.closeConnections(em);
     return user;
 }
 
-public static boolean removePerson(int id)
+public static int removePerson(int id)
 {
    EntityManager em = DBHelper.instance.createEntityManager();
 
     User u = em.find(User.class, id);
     if (u == null){
-    	return false;
+    	return -1;
     }
       
    EntityTransaction tx = em.getTransaction();
 
    tx.begin();
-   u = em.merge(u);
    em.remove(u);
    tx.commit();
    em.close();
 
-   return true;
+   return 1;
 }
 
 public static User updateUser(User u){
 	
-	// to do : check user data is null or not
+	// check input data of user u
 		
 	User user =User.getUserById(u.getUserId());
 	if(user == null)
 		return null;
 	
+	if(u.getUserFirstName()!=null)user.setUserFirstName(u.getUserFirstName());
+	if(u.getUserLastName() !=null)user.setUserLastName(u.getUserLastName());
+	if(u.getUserBirthDate()!=null)user.setUserBirthDate(u.getUserBirthDate());
+	if(u.getUserGender()!=null)
+		if (u.getUserGender().equalsIgnoreCase("male") || u.getUserGender().equalsIgnoreCase("female")) 
+			 user.setUserGender(u.getUserGender());
+	  	if(u.getUserEmail()!=null)
+	  		user.setUserEmail(u.getUserEmail());
 	
-	  if(u.getUserFirstName()!=null)user.setUserFirstName(u.getUserFirstName());
-	  if(u.getUserLastName() !=null)user.setUserLastName(u.getUserLastName());
-	  if(u.getUserBirthDate()!=null or )user.setUserBirthDate(u.getUserBirthDate());
-	  if()user.setUserEmail(u.getUserEmail());
-	  user.setUserGender(u.getUserGender());
-	
-	  EntityManager em =DBHelper.instance.createEntityManager();
-	  EntityTransaction tx = em.getTransaction();
+	 // update 
+	  	
+	 EntityManager em =DBHelper.instance.createEntityManager();
+	 EntityTransaction tx = em.getTransaction();
 
-	  tx.begin();
-	  user = em.merge(user);
-	  tx.commit();
+	 tx.begin();
+	 user = em.merge(user);
+	 tx.commit();
 
-	  em.close();
+	 em.close();
 	
-	  return user;
+	 return user;
 }
 
 public static List<User> getAll() {

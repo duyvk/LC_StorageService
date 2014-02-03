@@ -24,7 +24,6 @@ public class StorageImpl implements Storage{
 		if (u == null)
 			return -1;
 		
-		System.out.println("----------------------------------Test addUser in StorageIml"+u.getUserId());
 		return u.getUserId();
 	}
 
@@ -35,6 +34,12 @@ public class StorageImpl implements Storage{
 		if(updatedUser == null)
 			return -1;
 		return updatedUser.getUserId();
+	}
+
+	@Override
+	@WebMethod(operationName = "removeUser")
+	public int removeUser(@WebParam(name = "user_id") int user_id) {
+		return User.removePerson(user_id);
 	}
 
 }
