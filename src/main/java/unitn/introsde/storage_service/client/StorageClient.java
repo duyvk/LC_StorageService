@@ -88,6 +88,12 @@ public class StorageClient {
 		System.out.println("-----------------Test remove Goal by goal_id-----------");
 		System.out.println(storage.removeGoal(5));
 		
+		System.out.println("-----------------Test remove Goal by user_id, goal_id-----------");
+		System.out.println(storage.removeGoalByUser(1,651));
+		
+		System.out.println("-----------------Test remove Goal by caregiver_id,goal_id-----------");
+		System.out.println(storage.removeGoalByCaregiver(2	, 601));
+		
 		System.out.println("-----------------Test add Goal -----------");
 		Goal newGoal = new Goal();
 		User gu = storage.getUserById(1);
@@ -119,5 +125,19 @@ public class StorageClient {
 		System.out.println(Caregiver.getCaregiverById(1).getCgFirstName());
 		
 		System.out.println(storage.updateGoal(updatedGoal));
+		
+		System.out.println("-----------------Test update Goal by user-----------");
+		Goal updatedGoal2 = new Goal();
+		updatedGoal2.setGoalId(101);
+		updatedGoal2.setMeasuredefinition(Measuredefinition.getMeasureDefById(1));
+		
+		System.out.println(storage.updateGoalByUser(100, updatedGoal2));
+		
+		System.out.println("-----------------Test update Goal by caregiver-----------");
+		Goal updatedGoal3 = new Goal();
+		updatedGoal3.setGoalId(101);
+		updatedGoal3.setMeasuredefinition(Measuredefinition.getMeasureDefById(2));
+		
+		System.out.println(storage.updateGoalByUser(1000, updatedGoal3));
 	}
 }

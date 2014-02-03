@@ -161,7 +161,6 @@ public class Goal implements Serializable {
 	
 	public static boolean removeGoal(int id)
 	{
-
 	   EntityManager em = DBHelper.instance.createEntityManager();
 
 	   Goal g = em.find(Goal.class, id);
@@ -182,6 +181,56 @@ public class Goal implements Serializable {
 	   return true;
 	}
 
+	public static boolean removeGoalByUser(int user_id, int goal_id)
+	{
+	   EntityManager em = DBHelper.instance.createEntityManager();
+
+	   Goal g = em.find(Goal.class, goal_id);
+
+	    if (g== null){
+	    	return false;
+	    }
+	    
+	    if (g.getUser().getUserId()!= user_id)
+	    	return false;
+	      
+	   EntityTransaction tx = em.getTransaction();
+
+	   tx.begin();
+	   g = em.merge(g);
+	   em.remove(g);
+	   tx.commit();
+
+	   em.close();
+
+	   return true;
+	}
+	
+	public static boolean removeGoalByCaregiver(int cg_id, int goal_id)
+	{
+	   EntityManager em = DBHelper.instance.createEntityManager();
+
+	   Goal g = em.find(Goal.class, goal_id);
+
+	    if (g== null){
+	    	return false;
+	    }
+	    
+	    if (g.getCaregiver().getCgId()!= cg_id)
+	    	return false;
+	      
+	   EntityTransaction tx = em.getTransaction();
+
+	   tx.begin();
+	   g = em.merge(g);
+	   em.remove(g);
+	   tx.commit();
+
+	   em.close();
+
+	   return true;
+	}
+	
 	public static Goal updateGoal(Goal g){
 		// to-do : check input data. Please see User class as references
 		Goal goal =Goal.getGoalById(g.getGoalId());
@@ -231,6 +280,7 @@ public class Goal implements Serializable {
 		DBHelper.instance.closeConnections(em);
 		return cgGoals;
 	}
+	
 	
 	
 	/*public static List<Goal> getAllUserGoals(int user_id){

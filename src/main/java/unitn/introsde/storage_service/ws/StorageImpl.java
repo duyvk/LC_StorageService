@@ -139,7 +139,51 @@ public class StorageImpl implements Storage{
 	public boolean removeGoal(@WebParam(name = "goal_id") int goal_id) {
 		return Goal.removeGoal(goal_id);
 	}
+	
 
+	@Override
+	@WebMethod(operationName = "removeGoalByCaregiver")
+	public boolean removeGoalByCaregiver(@WebParam(name = "cg_id") int cg_id,
+			@WebParam(name = "goal_id") int goal_id) {
+		return Goal.removeGoalByCaregiver(cg_id, goal_id);
+	}
+
+
+	@Override
+	@WebMethod(operationName = "removeGoalByUser")
+	public boolean removeGoalByUser(@WebParam(name = "user_id") int user_id,
+			@WebParam(name = "goal_id") int goal_id) {
+		return Goal.removeGoalByUser(user_id, goal_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "updateGoalByUser")
+	public int updateGoalByUser(@WebParam(name = "user_id") int user_id,
+			@WebParam(name = "goal") Goal goal) {
+		Goal savedGoal =Goal.getGoalById(goal.getGoalId());
+		if (savedGoal == null)
+			return -1;
+		if (savedGoal.getUser().getUserId()!= user_id)
+			return -1;
+		
+		return Goal.updateGoal(goal).getGoalId();
+	}
+
+	@Override
+	@WebMethod(operationName = "updateGoalByCaregiver")
+	public int updateGoalByCaregiver(@WebParam(name = "cg_id") int cg_id,
+			@WebParam(name = "goal") Goal goal) {
+		Goal savedGoal =Goal.getGoalById(goal.getGoalId());
+		if (savedGoal == null)
+			return -1;
+		if (savedGoal.getCaregiver().getCgId()!= cg_id)
+			return -1;
+		
+		return Goal.updateGoal(goal).getGoalId();
+	}
+
+	
+	
 	// ------------------ caregiver service ------------------------------------------------
 	@Override
 	@WebMethod(operationName = "readCaregiver")

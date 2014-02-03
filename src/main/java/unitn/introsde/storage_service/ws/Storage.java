@@ -85,4 +85,15 @@ public interface Storage {
 	@WebMethod(operationName = "getGoalsbyCaregiverId")
 	public List<Goal> getGoalsbyCaregiverId(@WebParam(name = "cg_id") int cg_id);
 	
+	@WebMethod(operationName = "updateGoalByUser")
+	public int updateGoalByUser(@WebParam(name = "user_id") int user_id, @WebParam(name="goal") Goal goal);
+	
+	@WebMethod(operationName = "updateGoalByCaregiver")
+	public int updateGoalByCaregiver(@WebParam(name = "cg_id") int cg_id, @WebParam(name="goal") Goal goal);
+	
+	@WebMethod(operationName="removeGoalByCaregiver")
+	public boolean removeGoalByCaregiver(@WebParam(name="cg_id") int cg_id, @WebParam(name="goal_id") int goal_id);
+	
+	@WebMethod(operationName="removeGoalByUser")
+	public boolean removeGoalByUser(@WebParam(name="user_id") int user_id, @WebParam(name="goal_id") int goal_id);
 }
