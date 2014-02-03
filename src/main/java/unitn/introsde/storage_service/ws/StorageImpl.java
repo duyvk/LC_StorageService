@@ -1,5 +1,14 @@
 package unitn.introsde.storage_service.ws;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -8,9 +17,53 @@ import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.User;
+import unitn.introsde.storage_service.utils.LetterPairSimilarity;
+import unitn.introsde.storage_service.utils.ValueComparator;
 
 @WebService (endpointInterface= "unitn.introsde.storage_service.ws.Storage", serviceName="StorageService")
 public class StorageImpl implements Storage{
+	
+	// calculator service
+	@Override
+	@WebMethod(operationName = "searchUserbyName")
+	public List<User> searchUserbyName(
+			@WebParam(name = "searchString") String searchString, @WebParam(name ="max") int max) {
+		
+		List<User> allUsers = User.getAllUser();
+		if (allUsers.size()==0)
+			return null;
+
+		Map<User,Double> map = new HashMap<User, Double>();
+		for (User u : allUsers){
+			String nameOfUser = u.getUserFirstName() + " "+ u.getUserLastName();
+			System.out.println(nameOfUser);
+			map.put(u, new Double(LetterPairSimilarity.compareStrings(searchString.trim(), nameOfUser.trim())));
+		}
+		
+		ValueComparator vcm = new ValueComparator(map);
+		TreeMap<User, Double> sortedMap = new TreeMap<User, Double>(vcm);
+		
+		sortedMap.putAll(map);
+		
+		for ( Entry<User, Double> e : sortedMap.entrySet()){
+			System.out.println(e.getKey().getUserFirstName()+" "+e.getKey().getUserLastName());
+			System.out.println(e.getValue()+ "\n--------------");
+		}
+		
+		return new ArrayList<User>(sortedMap.keySet()).subList(0, max) ;
+		
+		/*List list = new ArrayList(map.entrySet());
+		
+		Collections.sort(list, new Comparator() {
+		@Override
+		public int compare(Object arg0, Object arg1) {
+			return (((Entry<User, Double>) arg1).getValue()).compareTo(((Entry<User, Double>) arg0).getValue());
+		}
+		 
+		});*/
+		
+	}
+	
 	
 	// ---------------------user service-----------------------------------------
 	@Override
@@ -43,6 +96,12 @@ public class StorageImpl implements Storage{
 	@WebMethod(operationName = "removeUser")
 	public boolean removeUser(@WebParam(name = "user_id") int user_id) {
 		return User.removePerson(user_id);
+	}
+	
+	@Override
+	@WebMethod(operationName = "getAllUser")
+	public List<User> getAllUser() {
+		return User.getAllUser();
 	}
 
 
@@ -85,8 +144,8 @@ public class StorageImpl implements Storage{
 	@Override
 	@WebMethod(operationName = "readCaregiver")
 	public Caregiver getCaregiverById(
-			@WebParam(name = "caregiver_id") int caregiver_id) {
-		return Caregiver.getCaregiverById(caregiver_id);
+			@WebParam(name = "cg_id") int cg_id) {
+		return Caregiver.getCaregiverById(cg_id);
 	}
 
 	@Override
@@ -110,10 +169,23 @@ public class StorageImpl implements Storage{
 	@Override
 	@WebMethod(operationName = "removeCaregiver")
 	public boolean removeCaregiver(
-			@WebParam(name = "caregiver_id") int caregiver_id) {
-		return Caregiver.removeCaregiver(caregiver_id);
+			@WebParam(name = "cg_id") int cg_id) {
+		return Caregiver.removeCaregiver(cg_id);
+	}
+	
+	@Override
+	@WebMethod(operationName = "getGoalsbyUserId")
+	public List<Goal> getGoalsbyUserId(@WebParam(name = "user_id") int user_id) {
+		return Goal.getGoalsByUserId(user_id);
 	}
 
+	@Override
+	@WebMethod(operationName = "getGoalsbyCaregiverId")
+	public List<Goal> getGoalsbyCaregiverId(@WebParam(name = "cg_id") int cg_id) {
+		return Goal.getGoalsByCaregiverId(cg_id);
+	}
+
+	
 	// ------------------ Measure definition service ------------------------------------------
 	@Override
 	@WebMethod(operationName = "readMeaDef")
@@ -145,9 +217,7 @@ public class StorageImpl implements Storage{
 	public boolean removeMeaDef(@WebParam(name = "meaDef_id") int meaDef_id) {
 		return Measuredefinition.removemeasuredefinition(meaDef_id);
 	}
-	
-	
-	
+
 	
 
 }

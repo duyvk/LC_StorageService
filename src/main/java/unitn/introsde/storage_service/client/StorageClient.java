@@ -5,6 +5,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
@@ -36,6 +37,12 @@ public class StorageClient {
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		// test your method here
+		
+		System.out.println("----------------------------CALCULATOR SERVICES------------------------------------");
+		List<User> returnUsers = storage.searchUserbyName("duy khuong", 4);
+		for (User u : returnUsers)
+			System.out.println(u.getUserFirstName()+ " "+u.getUserLastName());
+		
 		
 		System.out.println("----------------------------USER SERVICES------------------------------------");
 		System.out.println("--------------Test get user by id---------------");

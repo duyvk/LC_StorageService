@@ -1,5 +1,7 @@
 package unitn.introsde.storage_service.ws;
 
+import java.util.List;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -16,6 +18,11 @@ import unitn.introsde.storage_service.model.User;
 @WebService
 @SOAPBinding(style = Style.DOCUMENT, use = Use.LITERAL)
 public interface Storage {
+	
+	/* -------------------------Calculator services ---------------------*/
+	
+	@WebMethod(operationName = "searchUserbyName")
+	public List<User> searchUserbyName(@WebParam(name="searchString") String searchString, @WebParam(name ="max") int max);
 
 	/*---------------------------User Services--------------------------*/
 	@WebMethod(operationName = "readUser")
@@ -29,10 +36,13 @@ public interface Storage {
 
 	@WebMethod(operationName = "removeUser")
 	public boolean removeUser(@WebParam(name = "user_id") int user_id);
+	
+	@WebMethod(operationName = "getAllUser")
+	public List<User> getAllUser();
 
 	/*---------------------------Caregiver Services--------------------------*/
 	@WebMethod(operationName = "readCaregiver")
-	public Caregiver getCaregiverById(@WebParam(name = "caregiver_id") int caregiver_id);
+	public Caregiver getCaregiverById(@WebParam(name = "caregiver_id") int cg_id);
 
 	@WebMethod(operationName = "createCaregiver")
 	public int addCaregiver(@WebParam(name = "caregiver") Caregiver caregiver);
@@ -41,7 +51,7 @@ public interface Storage {
 	public int updateCaregiver(@WebParam(name = "caregiver") Caregiver caregiver);
 
 	@WebMethod(operationName = "removeCaregiver")
-	public boolean removeCaregiver(@WebParam(name = "caregiver_id") int caregiver_id);
+	public boolean removeCaregiver(@WebParam(name = "caregiver_id") int cg_id);
 	
 	/*---------------------------MeasureDefinition Services--------------------------*/
 	@WebMethod(operationName = "readMeaDef")
@@ -69,5 +79,10 @@ public interface Storage {
 	@WebMethod(operationName = "removeGoal")
 	public boolean removeGoal(@WebParam(name = "goal_id") int goal_id);
 	
+	@WebMethod(operationName = "getGoalsbyUserId")
+	public List<Goal> getGoalsbyUserId(@WebParam(name = "user_id") int user_id);
+	
+	@WebMethod(operationName = "getGoalsbyCaregiverId")
+	public List<Goal> getGoalsbyCaregiverId(@WebParam(name = "cg_id") int cg_id);
 	
 }

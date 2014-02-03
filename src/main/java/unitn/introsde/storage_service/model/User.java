@@ -197,11 +197,11 @@ public static User updateUser(User u){
 
 
 
-public static List<User> getAll() {
+public static List<User> getAllUser() {
    EntityManager em = DBHelper.instance.createEntityManager();
    List<User> list = em.createNamedQuery("User.findAll").getResultList();
-    em.close();
-    return list;
+   em.close();
+   return list;
 }
 
 //******************************************************************************
