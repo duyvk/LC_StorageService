@@ -12,7 +12,13 @@ import unitn.introsde.storage_service.model.User;
 @WebService
 @SOAPBinding(style = Style.DOCUMENT, use = Use.LITERAL)
 public interface Storage {
-	@WebMethod(operationName = "getUserById")
+	@WebMethod(operationName = "readUser")
 	public User getUserById(@WebParam(name="user_id") int user_id);
+	
+	@WebMethod(operationName= "createUSer")
+	public int addUser(@WebParam(name="user") User user);
+	
+	@WebMethod(operationName = "updateUser")
+	public int updateUser(@WebParam(name="usre") User user);
 
 }

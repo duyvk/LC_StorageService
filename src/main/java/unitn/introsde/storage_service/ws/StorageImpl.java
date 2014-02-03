@@ -11,9 +11,30 @@ public class StorageImpl implements Storage{
 	
 	// user service
 	@Override
-	@WebMethod(operationName = "getUserById")
+	@WebMethod(operationName = "readUser")
 	public User getUserById(@WebParam(name = "user_id") int user_id) {
 		return User.getUserById(user_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "createUSer")
+	public int addUser(@WebParam(name = "user") User user) {
+		User u = User.addUser(user);
+		
+		if (u == null)
+			return -1;
+		
+		System.out.println("----------------------------------Test addUser in StorageIml"+u.getUserId());
+		return u.getUserId();
+	}
+
+	@Override
+	@WebMethod(operationName = "updateUser")
+	public int updateUser(@WebParam(name = "usre") User user) {
+		User updatedUser = User.updateUser(user);
+		if(updatedUser == null)
+			return -1;
+		return updatedUser.getUserId();
 	}
 
 }
