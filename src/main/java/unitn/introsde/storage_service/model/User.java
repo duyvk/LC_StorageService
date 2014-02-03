@@ -107,7 +107,6 @@ public class User implements Serializable {
     // CRUD operation for User Model 
       /////////////////////////////////
 
-
 public static User getUserById(int id) {
      EntityManager em = DBHelper.instance.createEntityManager();
      User p = em.find(User.class, id);
@@ -144,13 +143,13 @@ public static User addUser(User user){
     return user;
 }
 
-public static int removePerson(int id)
+public static boolean removePerson(int id)
 {
    EntityManager em = DBHelper.instance.createEntityManager();
 
     User u = em.find(User.class, id);
     if (u == null){
-    	return -1;
+    	return false;
     }
       
    EntityTransaction tx = em.getTransaction();
@@ -160,14 +159,14 @@ public static int removePerson(int id)
    tx.commit();
    em.close();
 
-   return 1;
+   return true;
 }
 
 public static User updateUser(User u){
 	
 	// check input data of user u
 		
-	User user =User.getUserById(u.getUserId());
+	User user = User.getUserById(u.getUserId());
 	if(user == null)
 		return null;
 	
@@ -194,11 +193,13 @@ public static User updateUser(User u){
 	 return user;
 }
 
+
+
+
+
 public static List<User> getAll() {
    EntityManager em = DBHelper.instance.createEntityManager();
-    List<User> list = em.createNamedQuery("User.findAll")
-            .getResultList();
-
+   List<User> list = em.createNamedQuery("User.findAll").getResultList();
     em.close();
     return list;
 }

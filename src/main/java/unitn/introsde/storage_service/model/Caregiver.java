@@ -49,7 +49,7 @@ public class Caregiver implements Serializable {
 	@Lob
 	@Column(name="cg_phone_number")
 	private String cgPhoneNumber;
-
+/*
 	//bi-directional many-to-one association to Goal
 	@OneToMany(mappedBy="caregiver")
 	private List<Goal> goals;
@@ -57,7 +57,7 @@ public class Caregiver implements Serializable {
 	//bi-directional many-to-one association to Scheduledtask
 	@OneToMany(mappedBy="caregiver")
 	private List<Scheduledtask> scheduledtasks;
-
+*/
 	public Caregiver() {
 	}
 
@@ -109,7 +109,7 @@ public class Caregiver implements Serializable {
 		this.cgPhoneNumber = cgPhoneNumber;
 	}
 
-	public List<Goal> getGoals() {
+/*	public List<Goal> getGoals() {
 		return this.goals;
 	}
 
@@ -152,19 +152,22 @@ public class Caregiver implements Serializable {
 
 		return scheduledtask;
 	}
+*/
     ////////////////////////////////// 
     // CRUD operation for Caregiver Model 
       /////////////////////////////////
 
 
-public static Caregiver getcaregiverById(Integer id) {
+public static Caregiver getCaregiverById(Integer id) {
      EntityManager em = DBHelper.instance.createEntityManager();
      Caregiver cg = em.find(Caregiver.class, id);
      DBHelper.instance.closeConnections(em);
      return cg;
 }
 
-public static Caregiver addcaregiver(Caregiver cg){
+public static Caregiver addCaregiver(Caregiver cg){
+	
+	// to-do: check input data of cg
      EntityManager em = DBHelper.instance.createEntityManager();
      EntityTransaction tx = em.getTransaction();
 
@@ -176,7 +179,7 @@ public static Caregiver addcaregiver(Caregiver cg){
     DBHelper.instance.closeConnections(em);
     return cg;
 }
-public static boolean removecaregiver(int id)
+public static boolean removeCaregiver(int id)
 {
 
    EntityManager em = DBHelper.instance.createEntityManager();
@@ -184,8 +187,8 @@ public static boolean removecaregiver(int id)
     Caregiver cg = em.find(Caregiver.class, id);
 
     if (cg == null){
-	return false;
-       }
+    	return false;
+    }
       
    EntityTransaction tx = em.getTransaction();
 
@@ -201,25 +204,28 @@ public static boolean removecaregiver(int id)
 
 public static Caregiver updatecaregiver(Caregiver cg){
 	
-	Caregiver cgiver =Caregiver.getcaregiverById(cg.getCgId());
+	Caregiver cgiver =Caregiver.getCaregiverById(cg.getCgId());
+	if(cgiver == null)
+		return null;
 	
-	cgiver.setCgFirstName(cg.getCgFirstName());
+	// to-do: add if
+	if(cg.getCgFirstName() != null)cgiver.setCgFirstName(cg.getCgFirstName());
 	cgiver.setCgLastName(cg.getCgLastName());
 	cgiver.setCgEmail(cg.getCgEmail());
 	cgiver.setCgAddress(cg.getCgAddress());
 	cgiver.setCgPhoneNumber(cg.getCgPhoneNumber());
 	  
 	
-	  EntityManager em =DBHelper.instance.createEntityManager();
-	  EntityTransaction tx = em.getTransaction();
+	EntityManager em =DBHelper.instance.createEntityManager();
+	EntityTransaction tx = em.getTransaction();
 
-	   tx.begin();
-	   cgiver = em.merge(cgiver);
-	   tx.commit();
+	tx.begin();
+	cgiver = em.merge(cgiver);
+	tx.commit();
 
-	   em.close();
+	em.close();
 	
-	   return cgiver;
+	return cgiver;
 }
 
 
