@@ -6,8 +6,10 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import unitn.introsde.storage_service.DAO.DBHelper;
+import unitn.introsde.storage_service.utils.Utils;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 
@@ -17,7 +19,10 @@ import java.util.List;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name="Measurehistory.findAll", query="SELECT m FROM Measurehistory m")
+	@NamedQuery(name="MeaHis.findAll", query="SELECT m FROM Measurehistory m"),
+	@NamedQuery(name="MeaHis.getMeaHisByTimeRange", query="select h from Measurehistory h join h.measuredefinition m" +
+								" join h.user u where m.meaDef_id = :meaDef_id and u.userId = :user_id" +
+								" and h.meaHis_updated_time between :afterDate and :beforeDate ")
 	})
 @XmlRootElement
 @Table(name="measurehistory")
@@ -29,8 +34,9 @@ public class Measurehistory implements Serializable {
 	private int meaHis_id;
 
 	private String meaHis_calories;
-
-	private String meaHis_updated_time;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date meaHis_updated_time;
 
 	private BigDecimal meaHis_value;
 
@@ -63,11 +69,11 @@ public class Measurehistory implements Serializable {
 		this.meaHis_calories = meaHis_calories;
 	}
 
-	public String getMeaHis_updated_time() {
+	public Date getMeaHis_updated_time() {
 		return this.meaHis_updated_time;
 	}
 
-	public void setMeaHis_updated_time(String meaHis_updated_time) {
+	public void setMeaHis_updated_time(Date meaHis_updated_time) {
 		this.meaHis_updated_time = meaHis_updated_time;
 	}
 
@@ -163,9 +169,29 @@ public static Measurehistory updatemeasurehistory(Measurehistory mh){
 }
 
 
+
+public static List<Measurehistory> getMeaHisByTimeRange (int user_id,int meaDef_id, Date fromDate, Date toDate){
+	
+	EntityManager em = DBHelper.instance.createEntityManager();
+	List <Measurehistory> result = em.createNamedQuery("MeaHis.getMeaHisByTimeRange").setParameter("user_id", user_id)
+									.setParameter("meaDef_id", meaDef_id)
+									.setParameter("afterDate", (toDate))
+									.setParameter("beforeDate", Utils.getDateafter(fromDate))
+									.getResultList();
+	em.close();
+	return result;
+	
+	
+	/*select h " +
+            		" from HealthMeasureHistory h join h.measureDefinition m join h.person p"+
+            		" where  m.measureName = :measureName and p.idPerson = :idPerson" +
+            		" and h.timestamp between :afterDate and :beforeDate*/
+}
+
+
 public static List<Measurehistory> getAll() {
    EntityManager em = DBHelper.instance.createEntityManager();
-    List<Measurehistory> list = em.createNamedQuery("Measurehistory.findAll")
+    List<Measurehistory> list = em.createNamedQuery("MeaHis.findAll")
             .getResultList();
 
     em.close();

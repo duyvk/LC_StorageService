@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import unitn.introsde.storage_service.DAO.DBHelper;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +25,11 @@ import java.util.List;
 @Table(name="goal")
 public class Goal implements Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
+//	public enum GoalType {
+//		TOTAL, DAILY, LASTEST
+//	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="goal_id")
@@ -58,7 +61,11 @@ public class Goal implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="user_id")
 	private User user;
-
+	
+	@Lob
+	@Column(name="goal_type")
+    private String goal_type;
+	
 	public Goal() {
 	}
 
@@ -125,6 +132,15 @@ public class Goal implements Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
+	public String getGoal_type() {
+		return goal_type;
+	}
+
+	public void setGoal_type(String goal_type) {
+		this.goal_type = goal_type;
+	}
+	
 
 	
 
@@ -140,12 +156,18 @@ public class Goal implements Serializable {
 	}
 
 	public static Goal addGoal(Goal goal){
+		System.out.println("type: "+goal.goal_type);
 		if(goal == null)
 			return null;
 		
 		if(goal.getCaregiver()==null || goal.getUser() ==null 
 				||goal.getGoal_to_date()==null|| goal.getGoal_expected_value()==0
-				|| goal.getGoal_from_date()==null)
+				|| goal.getGoal_from_date()==null || goal.getGoal_type()==null)
+			return null;
+		
+		if(!goal.getGoal_type().equalsIgnoreCase("total")
+				&&!goal.getGoal_type().equalsIgnoreCase("daily")
+				&& !goal.getGoal_type().equalsIgnoreCase("latest")) 
 			return null;
 				
 	    EntityManager em = DBHelper.instance.createEntityManager();
@@ -245,6 +267,11 @@ public class Goal implements Serializable {
 		if(g.getGoal_from_date()!=null)goal.setGoal_from_date(g.getGoal_from_date());
 		if(g.getGoal_to_date()!=null)goal.setGoal_to_date(g.getGoal_to_date());
 		if(g.getGoalDesc()!=null)goal.setGoalDesc(g.getGoalDesc());
+		if(g.getGoal_type()!=null)
+				if(g.getGoal_type().equalsIgnoreCase("total")
+				||g.getGoal_type().equalsIgnoreCase("daily")
+				|| g.getGoal_type().equalsIgnoreCase("latest")) 
+			goal.setGoal_type(g.getGoal_type());
 		  
 		
 		EntityManager em =DBHelper.instance.createEntityManager();
@@ -280,7 +307,8 @@ public class Goal implements Serializable {
 		DBHelper.instance.closeConnections(em);
 		return cgGoals;
 	}
-	
+
+
 	
 	
 	/*public static List<Goal> getAllUserGoals(int user_id){

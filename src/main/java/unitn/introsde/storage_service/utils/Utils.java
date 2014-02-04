@@ -2,6 +2,7 @@ package unitn.introsde.storage_service.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class Utils {
@@ -19,5 +20,13 @@ public class Utils {
 		}
 		return null;
 		
+	} 
+	
+	public static Date getDateafter(Date theDate){
+		Calendar c = Calendar.getInstance();
+		c.setTime(theDate);
+		
+		c.add(Calendar.DAY_OF_YEAR, 1);
+		return c.getTime();
 	}
 }

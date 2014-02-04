@@ -1,5 +1,6 @@
 package unitn.introsde.storage_service.ws;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebMethod;
@@ -13,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Measuredefinition;
+import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
 
 @WebService
@@ -96,4 +98,12 @@ public interface Storage {
 	
 	@WebMethod(operationName="removeGoalByUser")
 	public boolean removeGoalByUser(@WebParam(name="user_id") int user_id, @WebParam(name="goal_id") int goal_id);
+	
+	
+	/*---------------------------MeasureHistory Services--------------------------*/
+	@WebMethod(operationName="getMeaHisByTimeRange")
+	public List<Measurehistory> getMeaHisByTimeRange (@WebParam(name="user_id") int user_id,
+			@WebParam (name="meaDef_id") int meaDef_id, @WebParam (name="fromDate") Date fromDate,
+			@WebParam (name="toDate") Date toDate);
+	
 }

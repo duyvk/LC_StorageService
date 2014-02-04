@@ -37,7 +37,7 @@ public class StorageClient {
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		// test your method here
-		
+/*		
 		System.out.println("----------------------------CALCULATOR SERVICES------------------------------------");
 		List<User> returnUsers = storage.searchUserbyName("duy khuong", 4);
 		for (User u : returnUsers)
@@ -82,8 +82,9 @@ public class StorageClient {
 		
 		System.out.println("----------------------------GOAL SERVICES------------------------------------");
 		System.out.println("-----------------Test get Goal by goal_id-----------");
-		Goal g = storage.getGoalById(2);
-		System.out.println(g.getCaregiver().getCgId());
+		Goal g = storage.getGoalById(1);
+		if (g!=null)
+			System.out.println(g.getGoalId());
 		
 		System.out.println("-----------------Test remove Goal by goal_id-----------");
 		System.out.println(storage.removeGoal(5));
@@ -93,7 +94,7 @@ public class StorageClient {
 		
 		System.out.println("-----------------Test remove Goal by caregiver_id,goal_id-----------");
 		System.out.println(storage.removeGoalByCaregiver(2	, 601));
-		
+		*/
 		System.out.println("-----------------Test add Goal -----------");
 		Goal newGoal = new Goal();
 		User gu = storage.getUserById(1);
@@ -104,6 +105,7 @@ public class StorageClient {
 		newGoal.setCaregiver(gcg);
 		newGoal.setMeasuredefinition(dmf);
 		newGoal.setGoal_from_date(new Date());
+		newGoal.setGoal_type("daily");
 		try {
 			newGoal.setGoal_to_date(format.parse("2014-02-15"));
 		} catch (ParseException e) {
@@ -115,7 +117,7 @@ public class StorageClient {
 		
 		// add Goal
 		System.out.println(storage.addGoal(newGoal));
-		
+/*		
 		System.out.println("-----------------Test update Goal -----------");
 		Goal updatedGoal = new Goal();
 		updatedGoal.setGoalId(101);
@@ -139,5 +141,6 @@ public class StorageClient {
 		updatedGoal3.setMeasuredefinition(Measuredefinition.getMeasureDefById(2));
 		
 		System.out.println(storage.updateGoalByUser(1000, updatedGoal3));
-	}
+*/	}
+
 }

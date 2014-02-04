@@ -3,6 +3,7 @@ package unitn.introsde.storage_service.ws;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import javax.jws.WebService;
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Measuredefinition;
+import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
 import unitn.introsde.storage_service.utils.LetterPairSimilarity;
 import unitn.introsde.storage_service.utils.ValueComparator;
@@ -260,6 +262,19 @@ public class StorageImpl implements Storage{
 	@WebMethod(operationName = "removeMeaDef")
 	public boolean removeMeaDef(@WebParam(name = "meaDef_id") int meaDef_id) {
 		return Measuredefinition.removemeasuredefinition(meaDef_id);
+	}
+
+	/*---------------------------MeasureHistory Services--------------------------*/
+	
+	@Override
+	@WebMethod(operationName = "getMeaHisByTimeRange")
+	public List<Measurehistory> getMeaHisByTimeRange(
+			@WebParam(name = "user_id") int user_id,
+			@WebParam(name = "meaDef_id") int meaDef_id,
+			@WebParam(name = "fromDate") Date fromDate,
+			@WebParam(name = "toDate") Date toDate) {
+		
+		return Measurehistory.getMeaHisByTimeRange(user_id, meaDef_id, fromDate, toDate);
 	}
 
 	
