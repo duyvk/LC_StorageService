@@ -38,7 +38,7 @@ public class Measurehistory implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date meaHis_updated_time;
 
-	private BigDecimal meaHis_value;
+	private double meaHis_value;
 
 	//bi-directional many-to-one association to Measuredefinition
 	@ManyToOne
@@ -77,11 +77,11 @@ public class Measurehistory implements Serializable {
 		this.meaHis_updated_time = meaHis_updated_time;
 	}
 
-	public BigDecimal getMeaHis_value() {
+	public double getMeaHis_value() {
 		return this.meaHis_value;
 	}
 
-	public void setMeaHis_value(BigDecimal meaHis_value) {
+	public void setMeaHis_value(double meaHis_value) {
 		this.meaHis_value = meaHis_value;
 	}
 

@@ -16,6 +16,7 @@ import javax.jws.WebService;
 
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Goal;
+import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
@@ -276,6 +277,47 @@ public class StorageImpl implements Storage{
 		
 		return Measurehistory.getMeaHisByTimeRange(user_id, meaDef_id, fromDate, toDate);
 	}
+
+	/*---------------------------LifeStatus Services--------------------------*/
+	@Override
+	public int addHealthStatus(@WebParam(name="lifestatus")Lifestatus lifestatus) {
+		// TODO Auto-generated method stub
+		
+		Lifestatus lf=null;
+		if(lifestatus.getMeasuredefinition().getMeaDef_type().equalsIgnoreCase("LifeStatus"))
+		
+		{   lf=lifestatus.addLifestatus(lifestatus);
+		
+		  
+			   
+			   Measurehistory ms=new Measurehistory();
+			   
+			   ms.setUser(lf.getUser());
+			   ms.setMeasuredefinition(lf.getMeasuredefinition());
+			   ms.setMeaHis_updated_time(lf.getLifeStatus_update_time());
+			   ms.setMeaHis_value(lf.getLifeStatus_value());
+			   
+			   Measurehistory.addmeasurehistory(ms);
+			   
+		   }
+		
+		if(lf==null)
+			return -1;
+		else
+		
+		return lf.getLifeStatus_id();
+	}
+
+
+	@Override
+	public int addActvity(Lifestatus lifestatus) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	
+
+	
 
 	
 

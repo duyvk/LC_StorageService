@@ -38,7 +38,19 @@ public class Measuredefinition implements Serializable {
 
 	@Lob
 	private String meaDef_unit;
-/*
+	
+	@Lob
+	private double MET;
+
+	public double getMET() {
+		return MET;
+	}
+
+	public void setMET(double mET) {
+		MET = mET;
+	}
+
+	/*
 	//bi-directional many-to-one association to Goal
 	@OneToMany(mappedBy="measuredefinition")
 	private List<Goal> goals;

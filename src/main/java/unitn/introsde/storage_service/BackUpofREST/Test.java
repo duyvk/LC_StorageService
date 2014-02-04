@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
