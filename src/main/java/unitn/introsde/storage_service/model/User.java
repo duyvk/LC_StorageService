@@ -22,11 +22,12 @@ import java.util.List;
 	})
 @XmlRootElement
 @Table(name="user")
+@TableGenerator(name="usergen", initialValue=1000, allocationSize=50)
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.TABLE, generator="usergen")
 	@Column(name="user_id")
 	private int userId;
 
@@ -106,8 +107,7 @@ public class User implements Serializable {
     // CRUD operation for User Model 
       /////////////////////////////////
 
-
-public static User getUserById(Integer id) {
+public static User getUserById(int id) {
      EntityManager em = DBHelper.instance.createEntityManager();
      User p = em.find(User.class, id);
      DBHelper.instance.closeConnections(em);
@@ -115,24 +115,39 @@ public static User getUserById(Integer id) {
 }
 
 public static User addUser(User user){
-     EntityManager em = DBHelper.instance.createEntityManager();
-     EntityTransaction tx = em.getTransaction();
-
-     tx.begin();
-     em.persist(user);
-     tx.commit();
-
-
+	
+	// to-do : check the data of user is null or not. return null if ..
+	// check birthdate format
+	
+	if (user == null)
+		return null;
+	if (user.getUserFirstName() == null)
+		return null;
+	if (user.getUserLastName() == null)
+		return null;
+	if (user.getUserGender() == null)
+		return null;
+	if (user.getUserEmail() == null)
+		return null;
+	if (user.getUserBirthDate() == null)
+		return null;
+	
+	EntityManager em = DBHelper.instance.createEntityManager();
+	
+	EntityTransaction tx = em.getTransaction();
+	tx.begin();
+	em.persist(user);
+	tx.commit();
+	
     DBHelper.instance.closeConnections(em);
     return user;
 }
+
 public static boolean removePerson(int id)
 {
-
    EntityManager em = DBHelper.instance.createEntityManager();
 
     User u = em.find(User.class, id);
-    System.out.println(u.getUserEmail());
     if (u == null){
     	return false;
     }
@@ -140,10 +155,8 @@ public static boolean removePerson(int id)
    EntityTransaction tx = em.getTransaction();
 
    tx.begin();
-   u = em.merge(u);
    em.remove(u);
    tx.commit();
-
    em.close();
 
    return true;
@@ -151,34 +164,44 @@ public static boolean removePerson(int id)
 
 public static User updateUser(User u){
 	
-	User user =User.getUserById(u.getUserId());
+	// check input data of user u
+		
+	User user = User.getUserById(u.getUserId());
+	if(user == null)
+		return null;
 	
-	  user.setUserFirstName(u.getUserFirstName());
-	  user.setUserLastName(u.getUserLastName());
-	  user.setUserBirthDate(u.getUserBirthDate());
-	  user.setUserEmail(u.getUserEmail());
-	  user.setUserGender(u.getUserGender());
-	  
+	if(u.getUserFirstName()!=null)user.setUserFirstName(u.getUserFirstName());
+	if(u.getUserLastName() !=null)user.setUserLastName(u.getUserLastName());
+	if(u.getUserBirthDate()!=null)user.setUserBirthDate(u.getUserBirthDate());
+	if(u.getUserGender()!=null)
+		if (u.getUserGender().equalsIgnoreCase("male") || u.getUserGender().equalsIgnoreCase("female")) 
+			 user.setUserGender(u.getUserGender());
+	  	if(u.getUserEmail()!=null)
+	  		user.setUserEmail(u.getUserEmail());
 	
-	  EntityManager em =DBHelper.instance.createEntityManager();
-	  EntityTransaction tx = em.getTransaction();
+	 // update 
+	  	
+	 EntityManager em =DBHelper.instance.createEntityManager();
+	 EntityTransaction tx = em.getTransaction();
 
-	   tx.begin();
-	   user = em.merge(user);
-	   tx.commit();
+	 tx.begin();
+	 user = em.merge(user);
+	 tx.commit();
 
-	   em.close();
+	 em.close();
 	
-	   return user;
+	 return user;
 }
 
-public static List<User> getAll() {
-   EntityManager em = DBHelper.instance.createEntityManager();
-    List<User> list = em.createNamedQuery("User.findAll")
-            .getResultList();
 
-    em.close();
-    return list;
+
+
+
+public static List<User> getAllUser() {
+   EntityManager em = DBHelper.instance.createEntityManager();
+   List<User> list = em.createNamedQuery("User.findAll").getResultList();
+   em.close();
+   return list;
 }
 
 //******************************************************************************
@@ -193,6 +216,6 @@ public static List<User> getByBirthdate(String start, String end) {
     em.close();
     return list;
 }
-	
+
 	
 }

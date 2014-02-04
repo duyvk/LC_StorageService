@@ -38,7 +38,7 @@ public class Measuredefinition implements Serializable {
 
 	@Lob
 	private String meaDef_unit;
-
+/*
 	//bi-directional many-to-one association to Goal
 	@OneToMany(mappedBy="measuredefinition")
 	private List<Goal> goals;
@@ -54,7 +54,7 @@ public class Measuredefinition implements Serializable {
 	//bi-directional many-to-one association to Measurehistory
 	@OneToMany(mappedBy="measuredefinition")
 	private List<Measurehistory> measurehistories;
-
+*/
 	public Measuredefinition() {
 	}
 
@@ -97,7 +97,7 @@ public class Measuredefinition implements Serializable {
 	public void setMeaDef_unit(String meaDef_unit) {
 		this.meaDef_unit = meaDef_unit;
 	}
-
+/*
 	public List<Goal> getGoals() {
 		return this.goals;
 	}
@@ -185,7 +185,7 @@ public class Measuredefinition implements Serializable {
 
 		return measurehistory;
 	}
-
+*/
     ////////////////////////////////// 
     // CRUD operation for measure definition Model 
       /////////////////////////////////
@@ -198,6 +198,8 @@ public static Measuredefinition getMeasureDefById(Integer id) {
 }
 
 public static Measuredefinition addmeasuredefinition(Measuredefinition md){
+	
+	// to-do : check data before insert
      EntityManager em = DBHelper.instance.createEntityManager();
      EntityTransaction tx = em.getTransaction();
 
@@ -217,8 +219,8 @@ public static boolean removemeasuredefinition(int id)
     Measuredefinition md = em.find(Measuredefinition.class, id);
 
     if (md == null){
-	return false;
-       }
+    	return false;
+    }
       
    EntityTransaction tx = em.getTransaction();
 
@@ -236,6 +238,9 @@ public static Measuredefinition updatemeasuredefinition(Measuredefinition md){
 	
 	Measuredefinition measuredef =Measuredefinition.getMeasureDefById(md.getMeaDef_id());
 	
+	if (measuredef == null)
+		return null;
+	// to-do : add if
 	measuredef.setMeaDef_name(md.getMeaDef_name());
 	measuredef.setMeaDef_type(md.getMeaDef_type());
 	measuredef.setMeaDef_description(md.getMeaDef_description());

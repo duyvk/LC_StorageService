@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import unitn.introsde.storage_service.DAO.DBHelper;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -18,13 +17,19 @@ import java.util.List;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name="Goal.findAll", query="SELECT g FROM Goal g")
+	@NamedQuery(name="Goal.findAll", query="SELECT g FROM Goal g"),
+	@NamedQuery(name="Goal.getGoalsByUserId", query="select gl from Goal gl where gl.user.userId = :user_id "),
+	@NamedQuery(name="Goal.getGoalsByCaregiverId", query="select gl from Goal gl where gl.caregiver.cgId = :cg_Id ")
 	})
 @XmlRootElement
 @Table(name="goal")
 public class Goal implements Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
+//	public enum GoalType {
+//		TOTAL, DAILY, LASTEST
+//	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="goal_id")
@@ -56,7 +61,11 @@ public class Goal implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="user_id")
 	private User user;
-
+	
+	@Lob
+	@Column(name="goal_type")
+    private String goal_type;
+	
 	public Goal() {
 	}
 
@@ -123,6 +132,15 @@ public class Goal implements Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
+	public String getGoal_type() {
+		return goal_type;
+	}
+
+	public void setGoal_type(String goal_type) {
+		this.goal_type = goal_type;
+	}
+	
 
 	
 
@@ -132,33 +150,46 @@ public class Goal implements Serializable {
 	
 	public static Goal getGoalById(Integer id) {
 	     EntityManager em = DBHelper.instance.createEntityManager();
-	     Goal p = em.find(Goal.class, id);
+	     Goal goal = em.find(Goal.class, id);
 	     DBHelper.instance.closeConnections(em);
-	     return p;
+	     return goal;
 	}
 
 	public static Goal addGoal(Goal goal){
-	     EntityManager em = DBHelper.instance.createEntityManager();
-	     EntityTransaction tx = em.getTransaction();
+		System.out.println("type: "+goal.goal_type);
+		if(goal == null)
+			return null;
+		
+		if(goal.getCaregiver()==null || goal.getUser() ==null 
+				||goal.getGoal_to_date()==null|| goal.getGoal_expected_value()==0
+				|| goal.getGoal_from_date()==null || goal.getGoal_type()==null)
+			return null;
+		
+		if(!goal.getGoal_type().equalsIgnoreCase("total")
+				&&!goal.getGoal_type().equalsIgnoreCase("daily")
+				&& !goal.getGoal_type().equalsIgnoreCase("latest")) 
+			return null;
+				
+	    EntityManager em = DBHelper.instance.createEntityManager();
+	    EntityTransaction tx = em.getTransaction();
 
-	     tx.begin();
-	     em.persist(goal);
-	     tx.commit();
-
+	    tx.begin();
+	    em.persist(goal);
+	    tx.commit();
 
 	    DBHelper.instance.closeConnections(em);
 	    return goal;
 	}
+	
 	public static boolean removeGoal(int id)
 	{
-
 	   EntityManager em = DBHelper.instance.createEntityManager();
 
 	   Goal g = em.find(Goal.class, id);
 
 	    if (g== null){
-		return false;
-	       }
+	    	return false;
+	    }
 	      
 	   EntityTransaction tx = em.getTransaction();
 
@@ -172,30 +203,114 @@ public class Goal implements Serializable {
 	   return true;
 	}
 
+	public static boolean removeGoalByUser(int user_id, int goal_id)
+	{
+	   EntityManager em = DBHelper.instance.createEntityManager();
+
+	   Goal g = em.find(Goal.class, goal_id);
+
+	    if (g== null){
+	    	return false;
+	    }
+	    
+	    if (g.getUser().getUserId()!= user_id)
+	    	return false;
+	      
+	   EntityTransaction tx = em.getTransaction();
+
+	   tx.begin();
+	   g = em.merge(g);
+	   em.remove(g);
+	   tx.commit();
+
+	   em.close();
+
+	   return true;
+	}
+	
+	public static boolean removeGoalByCaregiver(int cg_id, int goal_id)
+	{
+	   EntityManager em = DBHelper.instance.createEntityManager();
+
+	   Goal g = em.find(Goal.class, goal_id);
+
+	    if (g== null){
+	    	return false;
+	    }
+	    
+	    if (g.getCaregiver().getCgId()!= cg_id)
+	    	return false;
+	      
+	   EntityTransaction tx = em.getTransaction();
+
+	   tx.begin();
+	   g = em.merge(g);
+	   em.remove(g);
+	   tx.commit();
+
+	   em.close();
+
+	   return true;
+	}
+	
 	public static Goal updateGoal(Goal g){
-		
+		// to-do : check input data. Please see User class as references
 		Goal goal =Goal.getGoalById(g.getGoalId());
 		
-		  goal.setUser(g.getUser());
-		  goal.setCaregiver(g.getCaregiver());
-		  goal.setGoal_expected_value(g.getGoal_expected_value());
-		  goal.setGoal_from_date(g.getGoal_from_date());
-		  goal.setGoal_to_date(g.getGoal_to_date());
-		  goal.setGoalDesc(g.getGoalDesc());
+		if (goal == null)
+			return null;
+		
+		if(g.getUser()!=null)goal.setUser(g.getUser());
+		if(g.getCaregiver()!=null)goal.setCaregiver(g.getCaregiver());
+		if(g.getMeasuredefinition()!=null) goal.setMeasuredefinition(g.getMeasuredefinition());
+		if(g.getGoal_expected_value()>0)goal.setGoal_expected_value(g.getGoal_expected_value());
+		if(g.getGoal_from_date()!=null)goal.setGoal_from_date(g.getGoal_from_date());
+		if(g.getGoal_to_date()!=null)goal.setGoal_to_date(g.getGoal_to_date());
+		if(g.getGoalDesc()!=null)goal.setGoalDesc(g.getGoalDesc());
+		if(g.getGoal_type()!=null)
+				if(g.getGoal_type().equalsIgnoreCase("total")
+				||g.getGoal_type().equalsIgnoreCase("daily")
+				|| g.getGoal_type().equalsIgnoreCase("latest")) 
+			goal.setGoal_type(g.getGoal_type());
 		  
 		
-		  EntityManager em =DBHelper.instance.createEntityManager();
-		  EntityTransaction tx = em.getTransaction();
+		EntityManager em =DBHelper.instance.createEntityManager();
+		EntityTransaction tx = em.getTransaction();
 
-		   tx.begin();
-		   goal = em.merge(goal);
-		   tx.commit();
-
-		   em.close();
+		tx.begin();
+		goal = em.merge(goal);
+		tx.commit();
+		em.close();
 		
-		   return goal;
+		return goal;
 	}
 
+	
+	public static List<Goal> getGoalsByUserId(int user_id){
+		EntityManager em = DBHelper.instance.createEntityManager();
+		
+		List<Goal> userGoals = (List<Goal>) em.createNamedQuery("Goal.getGoalsByUserId", Goal.class)
+				         .setParameter("user_id", user_id)
+				         .getResultList();
+		
+		DBHelper.instance.closeConnections(em);
+		return userGoals;
+	}
+	
+	public static List<Goal> getGoalsByCaregiverId(int cg_id){
+		EntityManager em = DBHelper.instance.createEntityManager();
+		
+		List<Goal> cgGoals = (List<Goal>) em.createNamedQuery("Goal.getGoalsByCaregiverId", Goal.class)
+				         .setParameter("cg_Id", cg_id)
+				         .getResultList();
+		
+		DBHelper.instance.closeConnections(em);
+		return cgGoals;
+	}
+
+
+	
+	
 	/*public static List<Goal> getAllUserGoals(int user_id){
 	
     EntityManager em = DBHelper.instance.createEntityManager();
