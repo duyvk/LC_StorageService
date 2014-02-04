@@ -289,7 +289,7 @@ public class Goal implements Serializable {
 	public static List<Goal> getGoalsByUserId(int user_id){
 		EntityManager em = DBHelper.instance.createEntityManager();
 		
-		List<Goal> userGoals = (List<Goal>) em.createNamedQuery("Goal.getGoalsByUserId", Goal.class)
+		List<Goal> userGoals = (List<Goal>) em.createNamedQuery("Goal.getGoalsByUserId")
 				         .setParameter("user_id", user_id)
 				         .getResultList();
 		
@@ -300,7 +300,7 @@ public class Goal implements Serializable {
 	public static List<Goal> getGoalsByCaregiverId(int cg_id){
 		EntityManager em = DBHelper.instance.createEntityManager();
 		
-		List<Goal> cgGoals = (List<Goal>) em.createNamedQuery("Goal.getGoalsByCaregiverId", Goal.class)
+		List<Goal> cgGoals = (List<Goal>) em.createNamedQuery("Goal.getGoalsByCaregiverId")
 				         .setParameter("cg_Id", cg_id)
 				         .getResultList();
 		
