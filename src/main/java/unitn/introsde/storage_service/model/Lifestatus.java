@@ -155,41 +155,7 @@ public class Lifestatus implements Serializable {
 	}
 
 	
-	/*public static Lifestatus addUserLifeStatus(int user_id,int measure_def,Double value){
-		
-		Lifestatus lifestatus=new Lifestatus();
-		
-		lifestatus.setUser(User.getPersonById(user_id));
-		lifestatus.setMeasuredefinition(Measuredefinition.getMeasureDefById(measure_def));
-		lifestatus.setLifeStatus_value(value);
-		
-		 EntityManager em = DBHelper.instance.createEntityManager();
-	     EntityTransaction tx = em.getTransaction();
-
-	     tx.begin();
-	     em.persist(lifestatus);
-	     tx.commit();
-
-
-	    DBHelper.instance.closeConnections(em);
-	    return lifestatus;
-		
-	}
 	
-	public static Lifestatus getspecificMeasure(int user_id,int measure_def_id){
-		
-EntityManager em = DBHelper.instance.createEntityManager();
-		
-		Lifestatus lf = (Lifestatus) em.createQuery("select lf from Lifestatus lf where lf.user.userId = :user_id and lf.measuredefinition.meaDef_id =:measure_def_id")
-				         .setParameter("user_id", user_id)
-				         .setParameter("measure_def_id", measure_def_id)
-				         .getSingleResult();
-		
-		DBHelper.instance.closeConnections(em);
-		return lf;
-		
-	}*/
-
 public static boolean removeLifeStatus(int id)
 {
 

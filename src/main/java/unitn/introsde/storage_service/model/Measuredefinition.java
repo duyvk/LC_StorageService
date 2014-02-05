@@ -39,7 +39,7 @@ public class Measuredefinition implements Serializable {
 	@Lob
 	private String meaDef_unit;
 	
-	@Lob
+
 	private double MET;
 
 	public double getMET() {

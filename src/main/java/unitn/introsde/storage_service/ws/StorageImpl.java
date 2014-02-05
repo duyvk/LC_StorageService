@@ -280,10 +280,11 @@ public class StorageImpl implements Storage{
 
 	/*---------------------------LifeStatus Services--------------------------*/
 	@Override
-	public int addHealthStatus(@WebParam(name="lifestatus")Lifestatus lifestatus) {
+	public String addHealthStatus(@WebParam(name="lifestatus")Lifestatus lifestatus) {
 		// TODO Auto-generated method stub
 		
 		Lifestatus lf=null;
+		 Measurehistory mss=null;
 		if(lifestatus.getMeasuredefinition().getMeaDef_type().equalsIgnoreCase("LifeStatus"))
 		
 		{   lf=lifestatus.addLifestatus(lifestatus);
@@ -292,27 +293,77 @@ public class StorageImpl implements Storage{
 			   
 			   Measurehistory ms=new Measurehistory();
 			   
-			   ms.setUser(lf.getUser());
-			   ms.setMeasuredefinition(lf.getMeasuredefinition());
-			   ms.setMeaHis_updated_time(lf.getLifeStatus_update_time());
-			   ms.setMeaHis_value(lf.getLifeStatus_value());
+			   ms.setUser(lifestatus.getUser());
+			   ms.setMeasuredefinition(lifestatus.getMeasuredefinition());
+			   ms.setMeaHis_updated_time(lifestatus.getLifeStatus_update_time());
+			   ms.setMeaHis_value(lifestatus.getLifeStatus_value());
+			   ms.setMeaHis_calories(0.0);
 			   
-			   Measurehistory.addmeasurehistory(ms);
+			    mss=Measurehistory.addmeasurehistory(ms);
 			   
-		   }
+		}
 		
 		if(lf==null)
-			return -1;
+			return "error !";
 		else
 		
-		return lf.getLifeStatus_id();
+		return ""+lf.getLifeStatus_id()+" :"+mss.getMeaHis_id();
 	}
 
 
 	@Override
 	public int addActvity(Lifestatus lifestatus) {
 		// TODO Auto-generated method stub
-		return 0;
+		
+		
+		 Measurehistory mss=null;
+		if(lifestatus.getMeasuredefinition().getMeaDef_type().equalsIgnoreCase("Activity"))
+		
+		{
+			 Measurehistory ms=new Measurehistory();
+			   
+			   ms.setUser(lifestatus.getUser());
+			   ms.setMeasuredefinition(lifestatus.getMeasuredefinition());
+			   ms.setMeaHis_updated_time(lifestatus.getLifeStatus_update_time());
+			   ms.setMeaHis_value(lifestatus.getLifeStatus_value());
+			   ms.setMeaHis_calories(0.0);
+			   
+			    mss=Measurehistory.addmeasurehistory(ms);
+			
+		}
+		return mss.getMeaHis_id();
+	}
+
+
+	@Override
+	public String updateLifeStatus(int ls_id,double value) {
+		// TODO Auto-generated method stub
+
+		Lifestatus ls=
+		Lifestatus.getLifeStatusById(1201);
+		
+		
+		
+		Measurehistory ms=new Measurehistory();
+		   
+		   ms.setUser(ls.getUser());
+		   ms.setMeasuredefinition(ls.getMeasuredefinition());
+		   ms.setMeaHis_updated_time(ls.getLifeStatus_update_time());
+		   ms.setMeaHis_value(ls.getLifeStatus_value());
+		   ms.setMeaHis_calories(0.0);
+		   Measurehistory.addmeasurehistory(ms);
+		   
+		   
+		
+		   ls.setUser(ls.getUser());
+		   ls.setMeasuredefinition(ls.getMeasuredefinition());
+		   ls.setLifeStatus_update_time(ls.getLifeStatus_update_time());
+		   ls.setLifeStatus_value(10023);
+			Lifestatus lfs=Lifestatus.updateLifestatus(ls);
+		   
+		if(lfs == null)  return "error !";
+		
+		return ""+lfs.getLifeStatus_id();
 	}
 	
 	

@@ -109,9 +109,11 @@ public interface Storage {
 	/*---------------------------MeasureHistory Services--------------------------*/
 	
 	@WebMethod (operationName="createLifeStatus")
-	public int addHealthStatus(@WebParam(name="user") Lifestatus lifestatus);
+	public String addHealthStatus(@WebParam(name="lifeStatus") Lifestatus lifestatus);
 		
-	@WebMethod (operationName="createLifeStatus")
-	public int addActvity(@WebParam(name="user") Lifestatus lifestatus);
+	@WebMethod (operationName="createActivity")
+	public int addActvity(@WebParam(name="lifeStatus") Lifestatus lifestatus);
 	
+	@WebMethod (operationName="updateLifeStatus")
+	public String updateLifeStatus(@WebParam(name="lifeStatus") int ls_id,@WebParam(name="value") double value);	
 }

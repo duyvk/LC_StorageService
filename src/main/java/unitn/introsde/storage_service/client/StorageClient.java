@@ -143,18 +143,18 @@ public class StorageClient {
 		
 		System.out.println(storage.updateGoalByUser(1000, updatedGoal3));
 */	
-		System.out.println("-----------------Test add lifeStatus -----------");	
+	/*	System.out.println("-----------------Test add lifeStatus -----------");	
 		
 			Lifestatus lf=new Lifestatus();
 			
-			User user=storage.getUserById(1);
+			User user=storage.getUserById(2);
 			Measuredefinition di = storage.getMeaDefById(4);
 		
 			
 			lf.setUser(user);
 	        lf.setMeasuredefinition(di);
 	       try {
-				lf.setLifeStatus_update_time(format.parse("2014-02-15") );
+				lf.setLifeStatus_update_time(format.parse("2014-03-15") );
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -162,7 +162,15 @@ public class StorageClient {
 	        lf.setLifeStatus_value(89.0);
 	        
 	        
-	        System.out.println(storage.addHealthStatus(lf));
+	        System.out.println(storage.addHealthStatus(lf));*/
+	        
+	     System.out.println("-----------------Test update lifeStatus -----------");	
+	
+	        System.out.println(storage.updateLifeStatus(2, 100));
+	        
+	        
+	
+	
 	}
 
 }
