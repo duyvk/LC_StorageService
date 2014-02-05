@@ -520,46 +520,39 @@ public class StorageImpl implements Storage{
 	@WebMethod(operationName = "readFoodTrack")
 	public Foodtrack readFoodTrack(
 			@WebParam(name = "foodTrack_id") int foodTrack_id) {
-		// TODO Auto-generated method stub
-		return null;
+		return Foodtrack.getfoodtrackbyid(foodTrack_id);
 	}
 
 	@Override
 	@WebMethod(operationName = "createFoodTrack")
 	public int addFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack) {
-		// TODO Auto-generated method stub
-		return 0;
+		Foodtrack ft = Foodtrack.addfooFoodtrack(foodTrack);
+		if (ft==null)
+			return -1;
+		return ft.getFoodtrackId();
 	}
 
 	@Override
 	@WebMethod(operationName = "updateFoodTrack")
 	public int updateFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack) {
-		// TODO Auto-generated method stub
-		return 0;
+		Foodtrack ft = Foodtrack.updateFoodTrack(foodTrack);
+		if(ft==null)
+			return -1;
+		return ft.getFoodtrackId();
 	}
 
 	@Override
 	@WebMethod(operationName = "removeFoodTrack")
 	public boolean removeFoodTrack(
 			@WebParam(name = "foodTrack_id") int foodTrack_id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	@WebMethod(operationName = "getCaloriesOfFoodTrack")
-	public int getCaloriesOfFoodTrack(
-			@WebParam(name = "foodTrack") Foodtrack foodTrack) {
-		// TODO Auto-generated method stub
-		return 0;
+		return Foodtrack.removefoodtrack(foodTrack_id);
 	}
 
 	@Override
 	@WebMethod(operationName = "getFoodTracksByUserId")
 	public List<Foodtrack> getFoodTracksByUserId(
 			@WebParam(name = "user_id") int user_id) {
-		// TODO Auto-generated method stub
-		return null;
+		return Foodtrack.getFoodTracksByUserId(user_id);
 	}
 
 	@Override
@@ -568,26 +561,37 @@ public class StorageImpl implements Storage{
 			@WebParam(name = "user_id") int user_id,
 			@WebParam(name = "fromDate") Date fromDate,
 			@WebParam(name = "toDate") Date toDate) {
-		// TODO Auto-generated method stub
-		return null;
+		return Foodtrack.getFoodTrackOfUserByTimeRange(user_id, fromDate, toDate);
 	}
 
 	@Override
 	@WebMethod(operationName = "getFoodInforOfFoodTrack")
 	public String getFoodInforOfFoodTrack(
-			@WebParam(name = "food_id") int food_id,
-			@WebParam(name = "FoodSource") Externalsource foodSource) {
-		// TODO Auto-generated method stub
+			@WebParam(name = "foodTrack_id") int foodTrack_id) {
+		Foodtrack ft = Foodtrack.getfoodtrackbyid(foodTrack_id);
+		if (ft == null)
+			return null;
+		
+		String result = null;
+		Externalsource foodSource = ft.getExternalsource();
+		if(foodSource==null)
+			return null;
+		String source = foodSource.getExsourceName();
+		if(source.equalsIgnoreCase("local")){
+			//TODO
+			
+		}else if (source.equalsIgnoreCase("fatsecret food")){
+			//TODO
+		}
+		
 		return null;
 	}
 
 	@Override
 	@WebMethod(operationName = "getFoodCaloriesOfFoodTrack")
 	public int getFoodCaloriesOfFoodTrack(
-			@WebParam(name = "food_id") int food_id,
-			@WebParam(name = "FoodSource") Externalsource foodSource) {
+			@WebParam(name = "foodTrack_id") int foodTrack_id) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
 }

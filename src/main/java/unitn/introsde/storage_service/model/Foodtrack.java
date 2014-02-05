@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import unitn.introsde.storage_service.DAO.DBHelper;
+import unitn.introsde.storage_service.utils.Utils;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +18,10 @@ import java.util.List;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name="Foodtrack.findAll", query="SELECT f FROM Foodtrack f")
+	@NamedQuery(name="Foodtrack.findAll", query="SELECT f FROM Foodtrack f"),
+	@NamedQuery(name="FoodTrack.getFoodTrackOfUserByTimeRange", query="select ft from Foodtrack ft where ft.user.userId = :user_id" +
+									" and ft.foodtrackTime between :afterDate and :beforeDate "),
+	@NamedQuery(name="FoodTrack.getFoodTracksByUserId", query="select ft from Foodtrack ft where ft.user.userId=:user_id")
 	})
 @XmlRootElement
 @Table (name="foodtrack")
@@ -36,7 +40,7 @@ public class Foodtrack implements Serializable {
 	@Column(name="foodtrack_meal")
 	private String foodtrackMeal;
 	
-	@Lob
+	
 	@Column(name="foodtrack_amount")
 	private double foodtrackAmount;
 	
@@ -178,7 +182,7 @@ public static boolean removefoodtrack(int id)
    return true;
 }
 
-public static Foodtrack updateUser(Foodtrack ft){
+public static Foodtrack updateFoodTrack(Foodtrack ft){
 	
 	Foodtrack foodtrack =Foodtrack.getfoodtrackbyid(ft.getFoodtrackId());
 	
@@ -206,6 +210,25 @@ public static Foodtrack updateUser(Foodtrack ft){
 	 return foodtrack;
 }
 
+public static List<Foodtrack> getFoodTrackOfUserByTimeRange(int user_id, Date fromDate, Date toDate){
+	EntityManager em = DBHelper.instance.createEntityManager();
+	List <Foodtrack> result = em.createNamedQuery("FoodTrack.getFoodTrackOfUserByTimeRange")
+									.setParameter("user_id", user_id)
+									.setParameter("afterDate", (fromDate))
+									.setParameter("beforeDate", Utils.getDateafter(toDate))
+									.getResultList();
+	em.close();
+	return result;
+}
+
+public static List<Foodtrack> getFoodTracksByUserId(int user_id){
+	EntityManager em = DBHelper.instance.createEntityManager();
+	List <Foodtrack> result = em.createNamedQuery("FoodTrack.getFoodTracksByUserId")
+									.setParameter("user_id", user_id)
+									.getResultList();
+	em.close();
+	return result;
+}
 
 public static List<Foodtrack> getAll() {
    EntityManager em = DBHelper.instance.createEntityManager();
@@ -216,5 +239,13 @@ public static List<Foodtrack> getAll() {
     return list;
 }
 
+
+public static void main(String[] args) {
+	/*List<Foodtrack> ft = Foodtrack.getFoodTrackOfUserByTimeRange(1, 
+			Utils.strToDate("2014-01-01"), Utils.strToDate("2014-01-10"));*/
+	List<Foodtrack> ft = Foodtrack.getFoodTracksByUserId(1);
+	System.out.println(ft.size());
+	System.out.println(ft.get(0).getFoodtrackMeal());
+}
 
 }

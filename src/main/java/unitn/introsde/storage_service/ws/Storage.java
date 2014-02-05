@@ -172,10 +172,7 @@ public interface Storage {
 
 	@WebMethod(operationName = "removeFoodTrack")
 	public boolean removeFoodTrack(@WebParam(name = "foodTrack_id") int foodTrack_id);
-	
-	@WebMethod(operationName = "getCaloriesOfFoodTrack")
-	public int getCaloriesOfFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack);
-	
+		
 	@WebMethod (operationName = "getFoodTracksByUserId")
 	public List<Foodtrack> getFoodTracksByUserId (@WebParam(name="user_id") int user_id);
 	
@@ -184,9 +181,9 @@ public interface Storage {
 			@WebParam (name="toDate") Date toDate);
 	
 	@WebMethod(operationName = "getFoodInforOfFoodTrack")
-	public String getFoodInforOfFoodTrack (@WebParam (name="food_id") int food_id, @WebParam(name="FoodSource") Externalsource foodSource);
+	public String getFoodInforOfFoodTrack (@WebParam(name = "foodTrack_id") int foodTrack_id);
 	
 	@WebMethod(operationName = "getFoodCaloriesOfFoodTrack")
-	public int getFoodCaloriesOfFoodTrack (@WebParam (name="food_id") int food_id, @WebParam(name="FoodSource") Externalsource foodSource);
+	public int getFoodCaloriesOfFoodTrack (@WebParam(name = "foodTrack_id") int foodTrack_id);
 	
 }
