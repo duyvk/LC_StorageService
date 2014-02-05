@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import unitn.introsde.storage_service.utils.ValueComparator;
+import unitn.introsde.storage_service.utils.UserValueComparator;
 
-public class TestValueComparator {
+public class TestUserValueComparator {
 	
 	public static void main(String[] args) {
 
 		Map<User, Double> map  = new HashMap<User, Double>();
-		ValueComparator vcm = new ValueComparator(map);
+		UserValueComparator vcm = new UserValueComparator(map);
 		TreeMap<User, Double> tmap = new TreeMap<User, Double>(vcm);
 		
 		User u1 = new User();

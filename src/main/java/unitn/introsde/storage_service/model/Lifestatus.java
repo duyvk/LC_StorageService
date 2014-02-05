@@ -99,11 +99,8 @@ public class Lifestatus implements Serializable {
 		DBHelper.instance.closeConnections(em);
 		
 		return lf;
-		
-		
 	}
 	
-
 	public static Lifestatus addLifestatus(Lifestatus lifestatus){
 	    
 		

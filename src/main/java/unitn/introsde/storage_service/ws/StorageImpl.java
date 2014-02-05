@@ -26,9 +26,10 @@ import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
+import unitn.introsde.storage_service.utils.CaregiverValueComparator;
 import unitn.introsde.storage_service.utils.LetterPairSimilarity;
+import unitn.introsde.storage_service.utils.UserValueComparator;
 import unitn.introsde.storage_service.utils.Utils;
-import unitn.introsde.storage_service.utils.ValueComparator;
 
 @WebService (endpointInterface= "unitn.introsde.storage_service.ws.Storage", serviceName="StorageService")
 public class StorageImpl implements Storage{
@@ -89,7 +90,7 @@ public class StorageImpl implements Storage{
 			map.put(u, new Double(LetterPairSimilarity.compareStrings(searchString.trim(), nameOfUser.trim())));
 		}
 		
-		ValueComparator vcm = new ValueComparator(map);
+		UserValueComparator vcm = new UserValueComparator(map);
 		TreeMap<User, Double> sortedMap = new TreeMap<User, Double>(vcm);
 		
 		sortedMap.putAll(map);
@@ -108,8 +109,23 @@ public class StorageImpl implements Storage{
 	public List<Caregiver> searchCaregiverbyName(
 			@WebParam(name = "searchString") String searchString,
 			@WebParam(name = "max") int max) {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<Caregiver> allCaregiver = Caregiver.getAll();
+		if (allCaregiver.size()==0)
+			return null;
+
+		Map<Caregiver,Double> map = new HashMap<Caregiver, Double>();
+		for (Caregiver cg : allCaregiver){
+			String nameOfCaregiver = cg.getCgFirstName() + " "+ cg.getCgLastName();
+			map.put(cg, new Double(LetterPairSimilarity.compareStrings(searchString.trim(), nameOfCaregiver.trim())));
+		}
+		
+		CaregiverValueComparator vcm = new CaregiverValueComparator(map);
+		TreeMap<Caregiver, Double> sortedMap = new TreeMap<Caregiver, Double>(vcm);
+		
+		sortedMap.putAll(map);
+		
+		return new ArrayList<Caregiver>(sortedMap.keySet()).subList(0, max) ;
 	}
 
 	@Override
@@ -393,26 +409,25 @@ public class StorageImpl implements Storage{
 		Lifestatus ls=
 		Lifestatus.getLifeStatusById(1201);
 		
-		
+		if (ls == null)
+			return null;
 		
 		Measurehistory ms=new Measurehistory();
 		   
-		   ms.setUser(ls.getUser());
-		   ms.setMeasuredefinition(ls.getMeasuredefinition());
-		   ms.setMeaHis_updated_time(ls.getLifeStatus_update_time());
-		   ms.setMeaHis_value(ls.getLifeStatus_value());
-		   ms.setMeaHis_calories(0.0);
-		   Measurehistory.addmeasurehistory(ms);
+		ms.setUser(ls.getUser());
+		ms.setMeasuredefinition(ls.getMeasuredefinition());
+		ms.setMeaHis_updated_time(ls.getLifeStatus_update_time());
+		ms.setMeaHis_value(ls.getLifeStatus_value());
+		ms.setMeaHis_calories(0.0);
+		Measurehistory.addmeasurehistory(ms);
+
+		ls.setUser(ls.getUser());
+		ls.setMeasuredefinition(ls.getMeasuredefinition());
+		ls.setLifeStatus_update_time(ls.getLifeStatus_update_time());
+		ls.setLifeStatus_value(10023);
+		Lifestatus lfs=Lifestatus.updateLifestatus(ls);
 		   
-		   
-		
-		   ls.setUser(ls.getUser());
-		   ls.setMeasuredefinition(ls.getMeasuredefinition());
-		   ls.setLifeStatus_update_time(ls.getLifeStatus_update_time());
-		   ls.setLifeStatus_value(10023);
-			Lifestatus lfs=Lifestatus.updateLifestatus(ls);
-		   
-		if(lfs == null)  return "error !";
+		if(lfs == null)  return "error!";
 		
 		return ""+lfs.getLifeStatus_id();
 	}
@@ -557,17 +572,22 @@ public class StorageImpl implements Storage{
 		String source = foodSource.getExsourceName();
 		int food_id = ft.getFoodtrackFoodId();
 		if(source.equalsIgnoreCase("local")){
-			//TODO
+			Food food = Food.getFoodById(ft.getFoodtrackFoodId());
 			
+			if(food == null) return "";
+			result+= "1.Food_id"+":\t"+food.getFood_id()+"\n";
+			result+= "2.Food_name"+":\t"+food.getFood_name()+"\n";
+			result+= "3.Food_calories"+":\t"+food.getFoodCalories()+"\n";
+			if(food.getFoodFat()!=0)
+				result+= "4.Food_fat"+":\t"+food.getFoodFat()+"\n";
+			if(food.getFoodFat()!=0)
+				result+= "5.Food_protein"+":\t"+food.getFoodProtein()+"\n";
 			
 		}else if (source.equalsIgnoreCase("fatsecret food")){
-			//TODO  use food_id
 			Map<String, String> foodInfoMap = FatsecretAPI.getFoodInfo(String.valueOf(food_id));
 			for(String key: foodInfoMap.keySet())
-				result+= key+":\t"+foodInfoMap.get(key);
-			
+				result+= key+":\t"+foodInfoMap.get(key)+"\n";
 		}
-		
 		return result;
 	}
 
@@ -575,15 +595,29 @@ public class StorageImpl implements Storage{
 	@WebMethod(operationName = "getFoodCaloriesOfFoodTrack")
 	public int getFoodCaloriesOfFoodTrack(
 			@WebParam(name = "foodTrack_id") int foodTrack_id) {
-		// TODO Auto-generated method stub
+		Foodtrack ft = Foodtrack.getfoodtrackbyid(foodTrack_id);
+		if (ft == null)
+			return 0;
+		
+		Externalsource foodSource = ft.getExternalsource();
+		if(foodSource==null)
+			return 0;
+		String source = foodSource.getExsourceName();
+		int food_id = ft.getFoodtrackFoodId();
+		if(source.equalsIgnoreCase("local")){
+			Food food = Food.getFoodById(ft.getFoodtrackFoodId());
+			if(food==null) return 0;
+			return food.getFoodCalories();
+			
+		}else if (source.equalsIgnoreCase("fatsecret food")){
+			Map<String, String> foodInfoMap = FatsecretAPI.getFoodInfo(String.valueOf(food_id));
+			if(foodInfoMap.containsKey("4.Food_calories"))
+				return(Integer.parseInt((foodInfoMap.get("4.Food_calories").toString().trim())));
+		}
 		return 0;
 	}
-	
-	
-	
-	
 	public static void main(String[] args) {
 		StorageImpl i = new StorageImpl();
-		System.out.println(i.getFoodInforOfFoodTrack(1));
+		System.out.println(i.getFoodCaloriesOfFoodTrack(1));
 	}
 }
