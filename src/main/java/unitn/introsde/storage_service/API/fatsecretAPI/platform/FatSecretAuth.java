@@ -1,4 +1,4 @@
-package unitn.introsde.food_service.API.fatsecretAPI.platform;
+package unitn.introsde.storage_service.API.fatsecretAPI.platform;
 
 public class FatSecretAuth {
 	private String token, secret;

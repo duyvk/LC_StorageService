@@ -13,7 +13,9 @@ import java.util.TreeMap;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.transform.Source;
 
+import unitn.introsde.storage_service.API.fatsecretAPI.FatsecretAPI;
 import unitn.introsde.storage_service.model.APIbasedFood;
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Externalsource;
@@ -112,11 +114,9 @@ public class StorageImpl implements Storage{
 
 	@Override
 	@WebMethod(operationName = "searchFatSecretFood")
-	public List<APIbasedFood> searchFatSecretFood(
-			@WebParam(name = "searchText") String searchText,
-			@WebParam(name = "maxResults") int maxResult) {
-		// TODO Auto-generated method stub
-		return null;
+	public String searchFatSecretFood(
+			@WebParam(name = "searchText") String searchText) {
+		return FatsecretAPI.searchFatSecretFood(searchText);
 	}
 	
 	// ---------------------user service-----------------------------------------
@@ -418,29 +418,7 @@ public class StorageImpl implements Storage{
 	}
 	
 	
-	public static void main(String[] args) {
-		StorageImpl s = new StorageImpl();
-		List<Measurehistory> hisOfMeas = s.trackGoalbyUser(1, 1);
-		if (hisOfMeas.size() !=0){
-			Goal trackedGoal = s.getGoalById(1);
-			String unit = (trackedGoal.getMeasuredefinition().getMeaDef_unit()!=null)? trackedGoal.getMeasuredefinition().getMeaDef_unit() : " unit ";
-			String goalDes = 	"\nGoalID:\t"+trackedGoal.getGoalId() +
-							 	"\n  about:\t"+trackedGoal.getMeasuredefinition().getMeaDef_name()+
-							 	"\n  expect:\t"+trackedGoal.getGoal_expected_value()+" "+unit+
-							 	"\n  type:\t\t"+trackedGoal.getGoal_type()+
-							 	"\n  from:\t\t"+Utils.dateToString(trackedGoal.getGoal_from_date())+
-							 	"\n  to:\t\t"+Utils.dateToString(trackedGoal.getGoal_to_date())+
-							 	"\n\t* * *";
-			// check goal type and do statistics
-			System.out.println(goalDes);
-			System.out.println("Your Progress:");
-			
-			for (Measurehistory mh : hisOfMeas){
-				System.out.println(Utils.timestampToString(mh.getMeaHis_updated_time())
-						+ "\t"+ mh.getMeaHis_value()+" "+ unit);
-				}
-		}
-	}
+	
 
 	/* -------------------------External (Food) Source Service --------------------*/
 	@Override
@@ -570,21 +548,27 @@ public class StorageImpl implements Storage{
 			@WebParam(name = "foodTrack_id") int foodTrack_id) {
 		Foodtrack ft = Foodtrack.getfoodtrackbyid(foodTrack_id);
 		if (ft == null)
-			return null;
+			return "";
 		
-		String result = null;
+		String result = "";
 		Externalsource foodSource = ft.getExternalsource();
 		if(foodSource==null)
-			return null;
+			return "";
 		String source = foodSource.getExsourceName();
+		int food_id = ft.getFoodtrackFoodId();
 		if(source.equalsIgnoreCase("local")){
 			//TODO
 			
+			
 		}else if (source.equalsIgnoreCase("fatsecret food")){
-			//TODO
+			//TODO  use food_id
+			Map<String, String> foodInfoMap = FatsecretAPI.getFoodInfo(String.valueOf(food_id));
+			for(String key: foodInfoMap.keySet())
+				result+= key+":\t"+foodInfoMap.get(key);
+			
 		}
 		
-		return null;
+		return result;
 	}
 
 	@Override
@@ -593,5 +577,13 @@ public class StorageImpl implements Storage{
 			@WebParam(name = "foodTrack_id") int foodTrack_id) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	
+	
+	
+	public static void main(String[] args) {
+		StorageImpl i = new StorageImpl();
+		System.out.println(i.getFoodInforOfFoodTrack(1));
 	}
 }

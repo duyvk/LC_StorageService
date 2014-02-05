@@ -1,4 +1,4 @@
-package unitn.introsde.food_service.API.fatsecretAPI;
+package unitn.introsde.storage_service.API.fatsecretAPI;
 
 import java.io.IOException;
 import java.io.ObjectInputStream.GetField;
@@ -9,16 +9,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
-import unitn.introsde.food_service.API.fatsecretAPI.platform.FatSecretAPI;
-import unitn.introsde.food_service.API.fatsecretAPI.platform.FatSecretException;
+import unitn.introsde.storage_service.API.fatsecretAPI.platform.FatSecretAPI;
+import unitn.introsde.storage_service.API.fatsecretAPI.platform.FatSecretException;
 
 import com.json.parsers.*;
 
-
 public class FatsecretAPI {
 	public static Map<String, String> getFoodInfo(String food_id) {
-		Map<String, String> foodInfo = new HashMap<String, String>();
+		Map<String, String> foodInfo = new TreeMap<String, String>();
 		try {
 			FatSecretAPI api = new FatSecretAPI("b9d0e5229f0b482f91c68d86c509b560","04dbf50b9bc547729d8d85938dd37d12");
 	
@@ -40,13 +40,13 @@ public class FatsecretAPI {
 			String Food_fat=(String) ((Map)al.get(0)).get("fat");
 			String Food_Measur_Desc=(String) ((Map)al.get(0)).get("measurement_description");
 		
-			 foodInfo.put("Food_id", Food_Id);
-			 foodInfo.put("Food_name",Food_Name);
-			 foodInfo.put("Food_type",Food_Type);
-			 foodInfo.put("Food_calories",Food_calories);
-			 foodInfo.put("Food_proteins",Food_protiens);
-			 foodInfo.put("Food_fat",Food_fat);
-			 foodInfo.put("Food_unit",Food_Measur_Desc);
+			 foodInfo.put("1.Food_id", Food_Id);
+			 foodInfo.put("2.Food_name",Food_Name);
+			 foodInfo.put("3.Food_type",Food_Type);
+			 foodInfo.put("4.Food_calories",Food_calories);
+			 foodInfo.put("5.Food_proteins",Food_protiens);
+			 foodInfo.put("6.Food_fat",Food_fat);
+			 foodInfo.put("7.Food_unit",Food_Measur_Desc);
 			 
 		} 
 		catch (FatSecretException | IOException e) {

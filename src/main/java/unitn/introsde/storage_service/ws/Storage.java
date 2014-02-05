@@ -35,8 +35,7 @@ public interface Storage {
 	public List<Caregiver> searchCaregiverbyName(@WebParam(name="searchString") String searchString, @WebParam(name ="max") int max);
 	
 	@WebMethod(operationName = "searchFatSecretFood")
-	public List<APIbasedFood> searchFatSecretFood (@WebParam(name="searchText") String searchText,
-									@WebParam(name="maxResults") int maxResult);
+	public String searchFatSecretFood (@WebParam(name="searchText") String searchText);
 	
 	/* -------------------------GoalTracking Service --------------------*/
 	@WebMethod(operationName = "trackGoalbyUser")

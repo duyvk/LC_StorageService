@@ -1,4 +1,4 @@
-package unitn.introsde.food_service.API.fatsecretAPI.platform;
+package unitn.introsde.storage_service.API.fatsecretAPI.platform;
 
 import java.io.*;
 import java.net.*;
