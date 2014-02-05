@@ -12,6 +12,8 @@ import javax.jws.soap.SOAPBinding.Use;
 import javax.persistence.GeneratedValue;
 
 import unitn.introsde.storage_service.model.Caregiver;
+import unitn.introsde.storage_service.model.Externalsource;
+import unitn.introsde.storage_service.model.Food;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
@@ -120,4 +122,33 @@ public interface Storage {
 	
 	@WebMethod (operationName="updateLifeStatus")
 	public String updateLifeStatus(@WebParam(name="lifeStatus") int ls_id,@WebParam(name="value") double value);	
+	
+	/*---------------------------ExternalSource Services--------------------------*/
+	@WebMethod(operationName = "readFoodSource")
+	public Externalsource getFoodSourceById(@WebParam(name = "foodSource_id") int foodSource_id);
+
+	@WebMethod(operationName = "createFoodSource")
+	public int addFoodSource(@WebParam(name = "foodSource") Externalsource foodSource);
+
+	@WebMethod(operationName = "updateFoodSource")
+	public int updateFoodSource(@WebParam(name = "foodSource") Externalsource foodSource);
+
+	@WebMethod(operationName = "removeFoodSource")
+	public boolean removeFoodSource(@WebParam(name = "foodSource_id") int foodSource_id);
+	
+	/*-------------------------- Food services ------------------------------------*/
+	@WebMethod(operationName = "readLocalFood")
+	public Food getLocalFoodById(@WebParam(name = "localFood_id") int food_id);
+
+	@WebMethod(operationName = "createLocalFood")
+	public int addLocalFood(@WebParam(name = "localFood") Food food);
+
+	@WebMethod(operationName = "updateLocalFood")
+	public int updateLocalFood(@WebParam(name = "localFood") Food food);
+
+	@WebMethod(operationName = "removeLocalFood")
+	public boolean removeLocalFood(@WebParam(name = "localFood_id") int food_id);
+	
+	@WebMethod(operationName = "getLocalFoodsbyUserId")
+	public List<Food> getLocalFoodsByUserId(@WebParam(name = "user_id") int user_id);
 }

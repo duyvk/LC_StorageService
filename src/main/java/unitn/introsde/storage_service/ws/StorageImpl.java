@@ -15,6 +15,8 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 
 import unitn.introsde.storage_service.model.Caregiver;
+import unitn.introsde.storage_service.model.Externalsource;
+import unitn.introsde.storage_service.model.Food;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
@@ -407,7 +409,6 @@ public class StorageImpl implements Storage{
 	}
 	
 	
-	
 	public static void main(String[] args) {
 		StorageImpl s = new StorageImpl();
 		List<Measurehistory> hisOfMeas = s.trackGoalbyUser(1, 1);
@@ -431,6 +432,77 @@ public class StorageImpl implements Storage{
 				}
 		}
 	}
-	
 
+	/* -------------------------External (Food) Source Service --------------------*/
+	@Override
+	@WebMethod(operationName = "readFoodSource")
+	public Externalsource getFoodSourceById(
+			@WebParam(name = "foodSource_id") int foodSource_id) {
+		return Externalsource.getFoodSourceById(foodSource_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "createFoodSource")
+	public int addFoodSource(
+			@WebParam(name = "foodSource") Externalsource foodSource) {
+		Externalsource source = Externalsource.addFoodSource(foodSource);
+		if(source == null)
+			return -1;
+		return source.getExSource_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "updateFoodSource")
+	public int updateFoodSource(
+			@WebParam(name = "foodSource") Externalsource foodSource) {
+		Externalsource source = Externalsource.updateFoodSource(foodSource);
+		if(source == null)
+			return -1;
+		return source.getExSource_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "removeFoodSource")
+	public boolean removeFoodSource(
+			@WebParam(name = "foodSource_id") int foodSource_id) {
+		return Externalsource.removeFoodSource(foodSource_id);
+	}
+/* -------------------------Local Food Service (Food stored in local database)--------------------*/
+	@Override
+	@WebMethod(operationName = "readLocalFood")
+	public Food getLocalFoodById(@WebParam(name = "localFood_id") int food_id) {
+		return Food.getFoodById(food_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "createLocalFood")
+	public int addLocalFood(@WebParam(name = "localFood") Food food) {
+		Food f = Food.addFood(food);
+		if (f == null)
+			return -1;
+		return f.getFood_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "updateLocalFood")
+	public int updateLocalFood(@WebParam(name = "localFood") Food food) {
+		Food f = Food.updateFood(food);
+		if (f==null)
+			return -1;
+		return f.getFood_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "removeLocalFood")
+	public boolean removeLocalFood(@WebParam(name = "localFood_id") int food_id) {
+		return Food.removeFood(food_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "getLocalFoodsbyUserId")
+	public List<Food> getLocalFoodsByUserId(
+			@WebParam(name = "user_id") int user_id) {
+		return Food.getLocalFoodsByUserId(user_id);
+	}
+	
 }

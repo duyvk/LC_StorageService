@@ -15,7 +15,8 @@ import unitn.introsde.storage_service.DAO.DBHelper;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name="Food.findAll", query="SELECT f FROM Food f")
+	@NamedQuery(name="Food.findAll", query="SELECT f FROM Food f"),
+	@NamedQuery(name="Food.getLocalFoodsByUserId", query="select f from Food f where f.user.userId = :user_id "),
 	})
 @XmlRootElement
 @Table(name="food")
@@ -37,6 +38,10 @@ public class Food implements Serializable {
 
 	@Column(name="food_protein")
 	private double foodProtein;
+	
+	@ManyToOne
+	@JoinColumn(name="user_id")
+	private User user;
 
 	public Food() {
 	}
@@ -81,6 +86,13 @@ public class Food implements Serializable {
 		this.foodProtein = foodProtein;
 	}
 
+	public User getUser() {
+		return this.user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 	
 	
 
@@ -96,6 +108,13 @@ public static Food getFoodById(Integer id) {
 }
 
 public static Food addFood(Food food){
+	
+	if (food == null)
+		return null;
+	if(food.getFood_name() == null || 
+			food.getFoodCalories()==0||food.getUser()==null)
+		return null;
+	
      EntityManager em = DBHelper.instance.createEntityManager();
      EntityTransaction tx = em.getTransaction();
 
@@ -115,8 +134,8 @@ public static boolean removeFood(int id)
    Food f = em.find(Food.class, id);
 
     if (f == null){
-	return false;
-       }
+    	return false;
+    }
       
    EntityTransaction tx = em.getTransaction();
 
@@ -130,18 +149,16 @@ public static boolean removeFood(int id)
    return true;
 }
 
-public static Food updateUser(Food f){
+public static Food updateFood(Food f){
 	
 	Food food =Food.getFoodById(f.getFood_id());
 	
-	  food.setFood_name(f.getFood_name());
-	  food.setFoodCalories(f.getFoodCalories());
-	  food.setFoodFat(f.getFoodFat());
-	  food.setFoodProtein(f.getFoodProtein());
-	  
-	 
-	  
-	
+	if(f.getFood_name()!=null)food.setFood_name(f.getFood_name());
+	if(f.getFoodCalories()!=0)food.setFoodCalories(f.getFoodCalories());
+	if(f.getFoodFat()!=0)food.setFoodFat(f.getFoodFat());
+	if(f.getFoodProtein()!=0)food.setFoodProtein(f.getFoodProtein());
+	if(f.getUser()!=null) food.setUser(f.getUser());
+
 	  EntityManager em =DBHelper.instance.createEntityManager();
 	  EntityTransaction tx = em.getTransaction();
 
@@ -152,6 +169,17 @@ public static Food updateUser(Food f){
 	   em.close();
 	
 	   return food;
+}
+
+
+public static List<Food> getLocalFoodsByUserId(int user_id){
+	EntityManager em = DBHelper.instance.createEntityManager();
+	List<Food> userLocalFoods = (List<Food>) em.createNamedQuery("Food.getLocalFoodsByUserId")
+			         .setParameter("user_id", user_id)
+			         .getResultList();
+	
+	DBHelper.instance.closeConnections(em);
+	return userLocalFoods;
 }
 
 

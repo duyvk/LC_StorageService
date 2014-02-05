@@ -113,6 +113,12 @@ public static Foodtrack getfoodtrackbyid(Integer id) {
 }
 
 public static Foodtrack addfooFoodtrack(Foodtrack ft){
+	if (ft == null)
+		return null;
+	if(ft.getExternalsource()==null | ft.getFoodtrackFoodId()==0||
+			ft.getFoodtrackMeal()==null||ft.getFoodtrackTime()==null
+			||ft.getUser()==null)
+		return null;
      EntityManager em = DBHelper.instance.createEntityManager();
      EntityTransaction tx = em.getTransaction();
 
@@ -132,8 +138,8 @@ public static boolean removefoodtrack(int id)
     Foodtrack ft = em.find(Foodtrack.class, id);
 
     if (ft == null){
-	return false;
-       }
+    	return false;
+    }
       
    EntityTransaction tx = em.getTransaction();
 

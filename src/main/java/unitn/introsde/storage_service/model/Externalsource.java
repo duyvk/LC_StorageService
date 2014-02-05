@@ -78,26 +78,82 @@ public class Externalsource implements Serializable {
 		this.exsourceUrl = exsourceUrl;
 	}
 
-	public List<Foodtrack> getFoodtracks() {
-		return this.foodtracks;
-	}
 
 	public void setFoodtracks(List<Foodtrack> foodtracks) {
 		this.foodtracks = foodtracks;
 	}
+	
+	////////////////////////////// CRUD ///////////////////////////////////////////
 
-	public Foodtrack addFoodtrack(Foodtrack foodtrack) {
-		getFoodtracks().add(foodtrack);
-		foodtrack.setExternalsource(this);
+public static Externalsource getFoodSourceById(int id) {
+     EntityManager em = DBHelper.instance.createEntityManager();
+     Externalsource p = em.find(Externalsource.class, id);
+     DBHelper.instance.closeConnections(em);
+     return p;
+}
 
-		return foodtrack;
-	}
+public static Externalsource addFoodSource(Externalsource exSource){
+		
+	if (exSource == null)
+		return null;
+	if (exSource.getExsourceName() == null)
+		return null;
+	
+	EntityManager em = DBHelper.instance.createEntityManager();
+	
+	EntityTransaction tx = em.getTransaction();
+	tx.begin();
+	em.persist(exSource);
+	tx.commit();
+	
+    DBHelper.instance.closeConnections(em);
+    return exSource;
+}
 
-	public Foodtrack removeFoodtrack(Foodtrack foodtrack) {
-		getFoodtracks().remove(foodtrack);
-		foodtrack.setExternalsource(null);
+public static boolean removeFoodSource(int id)
+{
+   EntityManager em = DBHelper.instance.createEntityManager();
 
-		return foodtrack;
-	}
+    Externalsource u = em.find(Externalsource.class, id);
+    if (u == null){
+    	return false;
+    }
+      
+   EntityTransaction tx = em.getTransaction();
+
+   tx.begin();
+   em.remove(u);
+   tx.commit();
+   em.close();
+
+   return true;
+}
+
+public static Externalsource updateFoodSource(Externalsource e){
+	
+	// check input data of exSource u
+		
+	Externalsource exSource = Externalsource.getFoodSourceById(e.getExSource_id());
+	if(exSource == null)
+		return null;
+	
+	if(e.getExsourceName()!=null)exSource.setExsourceName(e.getExsourceName());
+	exSource.setExsourceUrl(e.getExsourceUrl());
+	exSource.setExsourceDesc(e.getExsourceDesc());
+	
+	 // update 
+	  	
+	 EntityManager em =DBHelper.instance.createEntityManager();
+	 EntityTransaction tx = em.getTransaction();
+
+	 tx.begin();
+	 exSource = em.merge(exSource);
+	 tx.commit();
+
+	 em.close();
+	
+	 return exSource;
+}
+
 
 }
