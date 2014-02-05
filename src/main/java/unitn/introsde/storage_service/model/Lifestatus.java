@@ -133,6 +133,8 @@ public class Lifestatus implements Serializable {
 		
 		Lifestatus lifestatus =Lifestatus.getLifeStatusById(l.getLifeStatus_id());
 		
+		if (lifestatus== null)
+			return null;
 		lifestatus.setUser(l.getUser());
 		lifestatus.setMeasuredefinition(l.getMeasuredefinition());
 		lifestatus.setLifeStatus_value(l.getLifeStatus_value());
