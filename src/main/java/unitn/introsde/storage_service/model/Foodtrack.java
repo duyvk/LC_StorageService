@@ -35,6 +35,14 @@ public class Foodtrack implements Serializable {
 	@Lob
 	@Column(name="foodtrack_meal")
 	private String foodtrackMeal;
+	
+	@Lob
+	@Column(name="foodtrack_amount")
+	private double foodtrackAmount;
+	
+	@Lob
+	@Column(name="foodtrack_unit")
+	private String foodtrackUnit;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="foodtrack_time")
@@ -59,6 +67,23 @@ public class Foodtrack implements Serializable {
 
 	public void setFoodtrackId(int foodtrackId) {
 		this.foodtrackId = foodtrackId;
+	}
+	
+
+	public double getFoodtrackAmount() {
+		return foodtrackAmount;
+	}
+	
+	public void setFoodtrackAmount(double foodtrackAmount) {
+		this.foodtrackAmount = foodtrackAmount;
+	}
+	
+	public String getFoodtrackUnit() {
+		return foodtrackUnit;
+	}
+	
+	public void setFoodtrackUnit(String foodtrackUnit) {
+		this.foodtrackUnit = foodtrackUnit;
 	}
 
 	public int getFoodtrackFoodId() {
@@ -157,21 +182,28 @@ public static Foodtrack updateUser(Foodtrack ft){
 	
 	Foodtrack foodtrack =Foodtrack.getfoodtrackbyid(ft.getFoodtrackId());
 	
-	foodtrack.setFoodtrackFoodId(ft.getFoodtrackFoodId());
-	foodtrack.setFoodtrackMeal(ft.getFoodtrackMeal());
-	foodtrack.setFoodtrackTime(ft.getFoodtrackTime());
+	if (foodtrack == null)
+		return null;
+	
+	if(ft.getFoodtrackFoodId()!=0)foodtrack.setFoodtrackFoodId(ft.getFoodtrackFoodId());
+	if(ft.getFoodtrackMeal()!=null)foodtrack.setFoodtrackMeal(ft.getFoodtrackMeal());
+	if(ft.getFoodtrackTime()!=null)foodtrack.setFoodtrackTime(ft.getFoodtrackTime());
+	if(ft.getExternalsource()!=null)foodtrack.setExternalsource(ft.getExternalsource());
+	if(ft.getUser()!=null) foodtrack.setUser(ft.getUser());
+	if(ft.getFoodtrackAmount()!=0) foodtrack.setFoodtrackAmount(ft.getFoodtrackAmount());
+	if(ft.getFoodtrackUnit()!=null) foodtrack.setFoodtrackUnit(ft.getFoodtrackUnit());
 	  
 	
-	  EntityManager em =DBHelper.instance.createEntityManager();
-	  EntityTransaction tx = em.getTransaction();
+	 EntityManager em =DBHelper.instance.createEntityManager();
+	 EntityTransaction tx = em.getTransaction();
 
-	   tx.begin();
-	   foodtrack = em.merge(foodtrack);
-	   tx.commit();
+	 tx.begin();
+	 foodtrack = em.merge(foodtrack);
+	 tx.commit();
 
-	   em.close();
+	 em.close();
 	
-	   return foodtrack;
+	 return foodtrack;
 }
 
 
@@ -183,5 +215,6 @@ public static List<Foodtrack> getAll() {
     em.close();
     return list;
 }
+
 
 }

@@ -14,9 +14,11 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
+import unitn.introsde.storage_service.model.APIbasedFood;
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Externalsource;
 import unitn.introsde.storage_service.model.Food;
+import unitn.introsde.storage_service.model.Foodtrack;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
@@ -96,19 +98,26 @@ public class StorageImpl implements Storage{
 		}
 		
 		return new ArrayList<User>(sortedMap.keySet()).subList(0, max) ;
-		
-		/*List list = new ArrayList(map.entrySet());
-		
-		Collections.sort(list, new Comparator() {
-		@Override
-		public int compare(Object arg0, Object arg1) {
-			return (((Entry<User, Double>) arg1).getValue()).compareTo(((Entry<User, Double>) arg0).getValue());
-		}
-		 
-		});*/
-		
+				
 	}
 	
+	@Override
+	@WebMethod(operationName = "searchCareGiverbyName")
+	public List<Caregiver> searchCaregiverbyName(
+			@WebParam(name = "searchString") String searchString,
+			@WebParam(name = "max") int max) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@WebMethod(operationName = "searchFatSecretFood")
+	public List<APIbasedFood> searchFatSecretFood(
+			@WebParam(name = "searchText") String searchText,
+			@WebParam(name = "maxResults") int maxResult) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	// ---------------------user service-----------------------------------------
 	@Override
@@ -503,6 +512,82 @@ public class StorageImpl implements Storage{
 	public List<Food> getLocalFoodsByUserId(
 			@WebParam(name = "user_id") int user_id) {
 		return Food.getLocalFoodsByUserId(user_id);
+	}
+
+	/* -------------------------Local Foodtrack Service--------------------*/
+
+	@Override
+	@WebMethod(operationName = "readFoodTrack")
+	public Foodtrack readFoodTrack(
+			@WebParam(name = "foodTrack_id") int foodTrack_id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@WebMethod(operationName = "createFoodTrack")
+	public int addFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	@WebMethod(operationName = "updateFoodTrack")
+	public int updateFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	@WebMethod(operationName = "removeFoodTrack")
+	public boolean removeFoodTrack(
+			@WebParam(name = "foodTrack_id") int foodTrack_id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	@WebMethod(operationName = "getCaloriesOfFoodTrack")
+	public int getCaloriesOfFoodTrack(
+			@WebParam(name = "foodTrack") Foodtrack foodTrack) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	@WebMethod(operationName = "getFoodTracksByUserId")
+	public List<Foodtrack> getFoodTracksByUserId(
+			@WebParam(name = "user_id") int user_id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@WebMethod(operationName = "getFoodTrackOfUserByTimeRange")
+	public List<Foodtrack> getFoodTrackOfUserByTimeRange(
+			@WebParam(name = "user_id") int user_id,
+			@WebParam(name = "fromDate") Date fromDate,
+			@WebParam(name = "toDate") Date toDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@WebMethod(operationName = "getFoodInforOfFoodTrack")
+	public String getFoodInforOfFoodTrack(
+			@WebParam(name = "food_id") int food_id,
+			@WebParam(name = "FoodSource") Externalsource foodSource) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@WebMethod(operationName = "getFoodCaloriesOfFoodTrack")
+	public int getFoodCaloriesOfFoodTrack(
+			@WebParam(name = "food_id") int food_id,
+			@WebParam(name = "FoodSource") Externalsource foodSource) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 }
