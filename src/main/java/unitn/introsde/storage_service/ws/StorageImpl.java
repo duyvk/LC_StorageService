@@ -13,20 +13,67 @@ import java.util.TreeMap;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.xml.transform.Source;
 
+import unitn.introsde.storage_service.API.fatsecretAPI.FatsecretAPI;
+import unitn.introsde.storage_service.model.APIbasedFood;
 import unitn.introsde.storage_service.model.Caregiver;
+import unitn.introsde.storage_service.model.Externalsource;
+import unitn.introsde.storage_service.model.Food;
+import unitn.introsde.storage_service.model.Foodtrack;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
+import unitn.introsde.storage_service.utils.CaregiverValueComparator;
 import unitn.introsde.storage_service.utils.LetterPairSimilarity;
-import unitn.introsde.storage_service.utils.ValueComparator;
+import unitn.introsde.storage_service.utils.UserValueComparator;
+import unitn.introsde.storage_service.utils.Utils;
 
 @WebService (endpointInterface= "unitn.introsde.storage_service.ws.Storage", serviceName="StorageService")
 public class StorageImpl implements Storage{
 	
-	// calculator service
+
+	/* -------------------------GoalTracking Service --------------------*/
+	@Override
+	@WebMethod(operationName = "trackGoalbyUser")
+	public List<Measurehistory> trackGoalbyUser(@WebParam(name = "user_id") int user_id,
+			@WebParam(name = "goal_id") int goal_id) {
+		
+		Goal trackedGoal = Goal.getGoalById(goal_id);
+		if (trackedGoal == null)
+			return new ArrayList<Measurehistory>();
+		// check goal belong to user or not
+		if (trackedGoal.getUser().getUserId()!= user_id)
+			return new ArrayList<Measurehistory>();
+		// get list of activity
+		List<Measurehistory> hisOfMeas = 
+				Measurehistory.getMeaHisByTimeRange(user_id, trackedGoal.getMeasuredefinition().getMeaDef_id(),
+						trackedGoal.getGoal_from_date(), trackedGoal.getGoal_to_date());
+
+/*		
+		String unit = (trackedGoal.getMeasuredefinition().getMeaDef_unit()!=null)? trackedGoal.getMeasuredefinition().getMeaDef_unit() : " unit ";
+		String goalDes = 	"\nGoalID:\t"+trackedGoal.getGoalId() +
+						 	"\n  about:\t"+trackedGoal.getMeasuredefinition().getMeaDef_name()+
+						 	"\n  expect:\t"+trackedGoal.getGoal_expected_value()+" "+unit+
+						 	"\n  type:\t\t"+trackedGoal.getGoal_type()+
+						 	"\n  from:\t\t"+Utils.dateToString(trackedGoal.getGoal_from_date())+
+						 	"\n  to:\t\t"+Utils.dateToString(trackedGoal.getGoal_to_date())+
+						 	"\n\t* * *";
+		// check goal type and do statistics
+		System.out.println(goalDes);
+		System.out.println("Your Progress:");
+		
+		for (Measurehistory mh : hisOfMeas){
+			System.out.println(Utils.timestampToString(mh.getMeaHis_updated_time())
+					+ "\t"+ mh.getMeaHis_value()+" "+ unit);
+		}*/
+		
+		return hisOfMeas;
+	}
+	
+	// -------------------------calculator service----------------------------------------
 	@Override
 	@WebMethod(operationName = "searchUserbyName")
 	public List<User> searchUserbyName(
@@ -43,7 +90,7 @@ public class StorageImpl implements Storage{
 			map.put(u, new Double(LetterPairSimilarity.compareStrings(searchString.trim(), nameOfUser.trim())));
 		}
 		
-		ValueComparator vcm = new ValueComparator(map);
+		UserValueComparator vcm = new UserValueComparator(map);
 		TreeMap<User, Double> sortedMap = new TreeMap<User, Double>(vcm);
 		
 		sortedMap.putAll(map);
@@ -54,19 +101,39 @@ public class StorageImpl implements Storage{
 		}
 		
 		return new ArrayList<User>(sortedMap.keySet()).subList(0, max) ;
-		
-		/*List list = new ArrayList(map.entrySet());
-		
-		Collections.sort(list, new Comparator() {
-		@Override
-		public int compare(Object arg0, Object arg1) {
-			return (((Entry<User, Double>) arg1).getValue()).compareTo(((Entry<User, Double>) arg0).getValue());
-		}
-		 
-		});*/
-		
+				
 	}
 	
+	@Override
+	@WebMethod(operationName = "searchCareGiverbyName")
+	public List<Caregiver> searchCaregiverbyName(
+			@WebParam(name = "searchString") String searchString,
+			@WebParam(name = "max") int max) {
+
+		List<Caregiver> allCaregiver = Caregiver.getAll();
+		if (allCaregiver.size()==0)
+			return null;
+
+		Map<Caregiver,Double> map = new HashMap<Caregiver, Double>();
+		for (Caregiver cg : allCaregiver){
+			String nameOfCaregiver = cg.getCgFirstName() + " "+ cg.getCgLastName();
+			map.put(cg, new Double(LetterPairSimilarity.compareStrings(searchString.trim(), nameOfCaregiver.trim())));
+		}
+		
+		CaregiverValueComparator vcm = new CaregiverValueComparator(map);
+		TreeMap<Caregiver, Double> sortedMap = new TreeMap<Caregiver, Double>(vcm);
+		
+		sortedMap.putAll(map);
+		
+		return new ArrayList<Caregiver>(sortedMap.keySet()).subList(0, max) ;
+	}
+
+	@Override
+	@WebMethod(operationName = "searchFatSecretFood")
+	public String searchFatSecretFood(
+			@WebParam(name = "searchText") String searchText) {
+		return FatsecretAPI.searchFatSecretFood(searchText);
+	}
 	
 	// ---------------------user service-----------------------------------------
 	@Override
@@ -345,26 +412,25 @@ public class StorageImpl implements Storage{
 		Lifestatus ls=
 		Lifestatus.getLifeStatusById(1201);
 		
-		
+		if (ls == null)
+			return null;
 		
 		Measurehistory ms=new Measurehistory();
 		   
-		   ms.setUser(ls.getUser());
-		   ms.setMeasuredefinition(ls.getMeasuredefinition());
-		   ms.setMeaHis_updated_time(ls.getLifeStatus_update_time());
-		   ms.setMeaHis_value(ls.getLifeStatus_value());
-		   ms.setMeaHis_calories(0.0);
-		   Measurehistory.addmeasurehistory(ms);
+		ms.setUser(ls.getUser());
+		ms.setMeasuredefinition(ls.getMeasuredefinition());
+		ms.setMeaHis_updated_time(ls.getLifeStatus_update_time());
+		ms.setMeaHis_value(ls.getLifeStatus_value());
+		ms.setMeaHis_calories(0.0);
+		Measurehistory.addmeasurehistory(ms);
+
+		ls.setUser(ls.getUser());
+		ls.setMeasuredefinition(ls.getMeasuredefinition());
+		ls.setLifeStatus_update_time(ls.getLifeStatus_update_time());
+		ls.setLifeStatus_value(10023);
+		Lifestatus lfs=Lifestatus.updateLifestatus(ls);
 		   
-		   
-		
-		   ls.setUser(ls.getUser());
-		   ls.setMeasuredefinition(ls.getMeasuredefinition());
-		   ls.setLifeStatus_update_time(ls.getLifeStatus_update_time());
-		   ls.setLifeStatus_value(10023);
-			Lifestatus lfs=Lifestatus.updateLifestatus(ls);
-		   
-		if(lfs == null)  return "error !";
+		if(lfs == null)  return "error!";
 		
 		return ""+lfs.getLifeStatus_id();
 	}
@@ -378,9 +444,191 @@ public class StorageImpl implements Storage{
 	}
 	
 	
-
 	
 
-	
+	/* -------------------------External (Food) Source Service --------------------*/
+	@Override
+	@WebMethod(operationName = "readFoodSource")
+	public Externalsource getFoodSourceById(
+			@WebParam(name = "foodSource_id") int foodSource_id) {
+		return Externalsource.getFoodSourceById(foodSource_id);
+	}
 
+	@Override
+	@WebMethod(operationName = "createFoodSource")
+	public int addFoodSource(
+			@WebParam(name = "foodSource") Externalsource foodSource) {
+		Externalsource source = Externalsource.addFoodSource(foodSource);
+		if(source == null)
+			return -1;
+		return source.getExSource_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "updateFoodSource")
+	public int updateFoodSource(
+			@WebParam(name = "foodSource") Externalsource foodSource) {
+		Externalsource source = Externalsource.updateFoodSource(foodSource);
+		if(source == null)
+			return -1;
+		return source.getExSource_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "removeFoodSource")
+	public boolean removeFoodSource(
+			@WebParam(name = "foodSource_id") int foodSource_id) {
+		return Externalsource.removeFoodSource(foodSource_id);
+	}
+/* -------------------------Local Food Service (Food stored in local database)--------------------*/
+	@Override
+	@WebMethod(operationName = "readLocalFood")
+	public Food getLocalFoodById(@WebParam(name = "localFood_id") int food_id) {
+		return Food.getFoodById(food_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "createLocalFood")
+	public int addLocalFood(@WebParam(name = "localFood") Food food) {
+		Food f = Food.addFood(food);
+		if (f == null)
+			return -1;
+		return f.getFood_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "updateLocalFood")
+	public int updateLocalFood(@WebParam(name = "localFood") Food food) {
+		Food f = Food.updateFood(food);
+		if (f==null)
+			return -1;
+		return f.getFood_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "removeLocalFood")
+	public boolean removeLocalFood(@WebParam(name = "localFood_id") int food_id) {
+		return Food.removeFood(food_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "getLocalFoodsbyUserId")
+	public List<Food> getLocalFoodsByUserId(
+			@WebParam(name = "user_id") int user_id) {
+		return Food.getLocalFoodsByUserId(user_id);
+	}
+
+	/* -------------------------Local Foodtrack Service--------------------*/
+
+	@Override
+	@WebMethod(operationName = "readFoodTrack")
+	public Foodtrack readFoodTrack(
+			@WebParam(name = "foodTrack_id") int foodTrack_id) {
+		return Foodtrack.getfoodtrackbyid(foodTrack_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "createFoodTrack")
+	public int addFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack) {
+		Foodtrack ft = Foodtrack.addfooFoodtrack(foodTrack);
+		if (ft==null)
+			return -1;
+		return ft.getFoodtrackId();
+	}
+
+	@Override
+	@WebMethod(operationName = "updateFoodTrack")
+	public int updateFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack) {
+		Foodtrack ft = Foodtrack.updateFoodTrack(foodTrack);
+		if(ft==null)
+			return -1;
+		return ft.getFoodtrackId();
+	}
+
+	@Override
+	@WebMethod(operationName = "removeFoodTrack")
+	public boolean removeFoodTrack(
+			@WebParam(name = "foodTrack_id") int foodTrack_id) {
+		return Foodtrack.removefoodtrack(foodTrack_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "getFoodTracksByUserId")
+	public List<Foodtrack> getFoodTracksByUserId(
+			@WebParam(name = "user_id") int user_id) {
+		return Foodtrack.getFoodTracksByUserId(user_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "getFoodTrackOfUserByTimeRange")
+	public List<Foodtrack> getFoodTrackOfUserByTimeRange(
+			@WebParam(name = "user_id") int user_id,
+			@WebParam(name = "fromDate") Date fromDate,
+			@WebParam(name = "toDate") Date toDate) {
+		return Foodtrack.getFoodTrackOfUserByTimeRange(user_id, fromDate, toDate);
+	}
+
+	@Override
+	@WebMethod(operationName = "getFoodInforOfFoodTrack")
+	public String getFoodInforOfFoodTrack(
+			@WebParam(name = "foodTrack_id") int foodTrack_id) {
+		Foodtrack ft = Foodtrack.getfoodtrackbyid(foodTrack_id);
+		if (ft == null)
+			return "";
+		
+		String result = "";
+		Externalsource foodSource = ft.getExternalsource();
+		if(foodSource==null)
+			return "";
+		String source = foodSource.getExsourceName();
+		int food_id = ft.getFoodtrackFoodId();
+		if(source.equalsIgnoreCase("local")){
+			Food food = Food.getFoodById(ft.getFoodtrackFoodId());
+			
+			if(food == null) return "";
+			result+= "1.Food_id"+":\t"+food.getFood_id()+"\n";
+			result+= "2.Food_name"+":\t"+food.getFood_name()+"\n";
+			result+= "3.Food_calories"+":\t"+food.getFoodCalories()+"\n";
+			if(food.getFoodFat()!=0)
+				result+= "4.Food_fat"+":\t"+food.getFoodFat()+"\n";
+			if(food.getFoodFat()!=0)
+				result+= "5.Food_protein"+":\t"+food.getFoodProtein()+"\n";
+			
+		}else if (source.equalsIgnoreCase("fatsecret food")){
+			Map<String, String> foodInfoMap = FatsecretAPI.getFoodInfo(String.valueOf(food_id));
+			for(String key: foodInfoMap.keySet())
+				result+= key+":\t"+foodInfoMap.get(key)+"\n";
+		}
+		return result;
+	}
+
+	@Override
+	@WebMethod(operationName = "getFoodCaloriesOfFoodTrack")
+	public int getFoodCaloriesOfFoodTrack(
+			@WebParam(name = "foodTrack_id") int foodTrack_id) {
+		Foodtrack ft = Foodtrack.getfoodtrackbyid(foodTrack_id);
+		if (ft == null)
+			return 0;
+		
+		Externalsource foodSource = ft.getExternalsource();
+		if(foodSource==null)
+			return 0;
+		String source = foodSource.getExsourceName();
+		int food_id = ft.getFoodtrackFoodId();
+		if(source.equalsIgnoreCase("local")){
+			Food food = Food.getFoodById(ft.getFoodtrackFoodId());
+			if(food==null) return 0;
+			return food.getFoodCalories();
+			
+		}else if (source.equalsIgnoreCase("fatsecret food")){
+			Map<String, String> foodInfoMap = FatsecretAPI.getFoodInfo(String.valueOf(food_id));
+			if(foodInfoMap.containsKey("4.Food_calories"))
+				return(Integer.parseInt((foodInfoMap.get("4.Food_calories").toString().trim())));
+		}
+		return 0;
+	}
+	public static void main(String[] args) {
+		StorageImpl i = new StorageImpl();
+		System.out.println(i.getFoodCaloriesOfFoodTrack(1));
+	}
 }

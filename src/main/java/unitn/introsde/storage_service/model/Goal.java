@@ -160,6 +160,10 @@ public class Goal implements Serializable {
 		if(goal == null)
 			return null;
 		
+		if (goal.getGoal_from_date() == null)
+			goal.setGoal_from_date(new Date());
+		if (goal.getGoal_to_date() == null)
+			goal.setGoal_to_date(new Date());
 		if(goal.getCaregiver()==null || goal.getUser() ==null 
 				||goal.getGoal_to_date()==null|| goal.getGoal_expected_value()==0
 				|| goal.getGoal_from_date()==null || goal.getGoal_type()==null)

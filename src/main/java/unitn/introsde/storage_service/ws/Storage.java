@@ -11,7 +11,11 @@ import javax.jws.soap.SOAPBinding.Style;
 import javax.jws.soap.SOAPBinding.Use;
 import javax.persistence.GeneratedValue;
 
+import unitn.introsde.storage_service.model.APIbasedFood;
 import unitn.introsde.storage_service.model.Caregiver;
+import unitn.introsde.storage_service.model.Externalsource;
+import unitn.introsde.storage_service.model.Food;
+import unitn.introsde.storage_service.model.Foodtrack;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
@@ -26,7 +30,16 @@ public interface Storage {
 	
 	@WebMethod(operationName = "searchUserbyName")
 	public List<User> searchUserbyName(@WebParam(name="searchString") String searchString, @WebParam(name ="max") int max);
-
+	
+	@WebMethod(operationName = "searchCareGiverbyName")
+	public List<Caregiver> searchCaregiverbyName(@WebParam(name="searchString") String searchString, @WebParam(name ="max") int max);
+	
+	@WebMethod(operationName = "searchFatSecretFood")
+	public String searchFatSecretFood (@WebParam(name="searchText") String searchText);
+	
+	/* -------------------------GoalTracking Service --------------------*/
+	@WebMethod(operationName = "trackGoalbyUser")
+	public List<Measurehistory> trackGoalbyUser (@WebParam(name="user_id") int user_id, @WebParam(name="goal_id") int goal_id);
 	/*---------------------------User Services--------------------------*/
 	@WebMethod(operationName = "readUser")
 	public User getUserById(@WebParam(name = "user_id") int user_id);
@@ -119,4 +132,60 @@ public interface Storage {
 	
 	@WebMethod(operationName="readLifeStatus")
 	public Lifestatus readLifeStatus(@WebParam(name="lifeStatus") int ls_id);
+	
+	/*---------------------------ExternalSource Services--------------------------*/
+	@WebMethod(operationName = "readFoodSource")
+	public Externalsource getFoodSourceById(@WebParam(name = "foodSource_id") int foodSource_id);
+
+	@WebMethod(operationName = "createFoodSource")
+	public int addFoodSource(@WebParam(name = "foodSource") Externalsource foodSource);
+
+	@WebMethod(operationName = "updateFoodSource")
+	public int updateFoodSource(@WebParam(name = "foodSource") Externalsource foodSource);
+
+	@WebMethod(operationName = "removeFoodSource")
+	public boolean removeFoodSource(@WebParam(name = "foodSource_id") int foodSource_id);
+	
+	/*-------------------------- Food services ------------------------------------*/
+	@WebMethod(operationName = "readLocalFood")
+	public Food getLocalFoodById(@WebParam(name = "localFood_id") int food_id);
+
+	@WebMethod(operationName = "createLocalFood")
+	public int addLocalFood(@WebParam(name = "localFood") Food food);
+
+	@WebMethod(operationName = "updateLocalFood")
+	public int updateLocalFood(@WebParam(name = "localFood") Food food);
+
+	@WebMethod(operationName = "removeLocalFood")
+	public boolean removeLocalFood(@WebParam(name = "localFood_id") int food_id);
+	
+	@WebMethod(operationName = "getLocalFoodsbyUserId")
+	public List<Food> getLocalFoodsByUserId(@WebParam(name = "user_id") int user_id);
+	
+	/*----------------------------Foodtrack service ----------------------------------*/
+	@WebMethod(operationName = "readFoodTrack")
+	public Foodtrack readFoodTrack(@WebParam(name = "foodTrack_id") int foodTrack_id);
+
+	@WebMethod(operationName = "createFoodTrack")
+	public int addFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack);
+
+	@WebMethod(operationName = "updateFoodTrack")
+	public int updateFoodTrack(@WebParam(name = "foodTrack") Foodtrack foodTrack);
+
+	@WebMethod(operationName = "removeFoodTrack")
+	public boolean removeFoodTrack(@WebParam(name = "foodTrack_id") int foodTrack_id);
+		
+	@WebMethod (operationName = "getFoodTracksByUserId")
+	public List<Foodtrack> getFoodTracksByUserId (@WebParam(name="user_id") int user_id);
+	
+	@WebMethod (operationName = "getFoodTrackOfUserByTimeRange")
+	public List<Foodtrack> getFoodTrackOfUserByTimeRange (@WebParam(name="user_id") int user_id, @WebParam (name="fromDate") Date fromDate,
+			@WebParam (name="toDate") Date toDate);
+	
+	@WebMethod(operationName = "getFoodInforOfFoodTrack")
+	public String getFoodInforOfFoodTrack (@WebParam(name = "foodTrack_id") int foodTrack_id);
+	
+	@WebMethod(operationName = "getFoodCaloriesOfFoodTrack")
+	public int getFoodCaloriesOfFoodTrack (@WebParam(name = "foodTrack_id") int foodTrack_id);
+	
 }

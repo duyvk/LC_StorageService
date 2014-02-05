@@ -175,8 +175,8 @@ public static List<Measurehistory> getMeaHisByTimeRange (int user_id,int meaDef_
 	EntityManager em = DBHelper.instance.createEntityManager();
 	List <Measurehistory> result = em.createNamedQuery("MeaHis.getMeaHisByTimeRange").setParameter("user_id", user_id)
 									.setParameter("meaDef_id", meaDef_id)
-									.setParameter("afterDate", (toDate))
-									.setParameter("beforeDate", Utils.getDateafter(fromDate))
+									.setParameter("afterDate", (fromDate))
+									.setParameter("beforeDate", Utils.getDateafter(toDate))
 									.getResultList();
 	em.close();
 	return result;

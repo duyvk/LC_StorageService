@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import unitn.introsde.storage_service.DAO.DBHelper;
+import unitn.introsde.storage_service.utils.Utils;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +18,10 @@ import java.util.List;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name="Foodtrack.findAll", query="SELECT f FROM Foodtrack f")
+	@NamedQuery(name="Foodtrack.findAll", query="SELECT f FROM Foodtrack f"),
+	@NamedQuery(name="FoodTrack.getFoodTrackOfUserByTimeRange", query="select ft from Foodtrack ft where ft.user.userId = :user_id" +
+									" and ft.foodtrackTime between :afterDate and :beforeDate "),
+	@NamedQuery(name="FoodTrack.getFoodTracksByUserId", query="select ft from Foodtrack ft where ft.user.userId=:user_id")
 	})
 @XmlRootElement
 @Table (name="foodtrack")
@@ -35,6 +39,14 @@ public class Foodtrack implements Serializable {
 	@Lob
 	@Column(name="foodtrack_meal")
 	private String foodtrackMeal;
+	
+	
+	@Column(name="foodtrack_amount")
+	private double foodtrackAmount;
+	
+	@Lob
+	@Column(name="foodtrack_unit")
+	private String foodtrackUnit;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="foodtrack_time")
@@ -59,6 +71,23 @@ public class Foodtrack implements Serializable {
 
 	public void setFoodtrackId(int foodtrackId) {
 		this.foodtrackId = foodtrackId;
+	}
+	
+
+	public double getFoodtrackAmount() {
+		return foodtrackAmount;
+	}
+	
+	public void setFoodtrackAmount(double foodtrackAmount) {
+		this.foodtrackAmount = foodtrackAmount;
+	}
+	
+	public String getFoodtrackUnit() {
+		return foodtrackUnit;
+	}
+	
+	public void setFoodtrackUnit(String foodtrackUnit) {
+		this.foodtrackUnit = foodtrackUnit;
 	}
 
 	public int getFoodtrackFoodId() {
@@ -113,6 +142,12 @@ public static Foodtrack getfoodtrackbyid(Integer id) {
 }
 
 public static Foodtrack addfooFoodtrack(Foodtrack ft){
+	if (ft == null)
+		return null;
+	if(ft.getExternalsource()==null | ft.getFoodtrackFoodId()==0||
+			ft.getFoodtrackMeal()==null||ft.getFoodtrackTime()==null
+			||ft.getUser()==null)
+		return null;
      EntityManager em = DBHelper.instance.createEntityManager();
      EntityTransaction tx = em.getTransaction();
 
@@ -132,8 +167,8 @@ public static boolean removefoodtrack(int id)
     Foodtrack ft = em.find(Foodtrack.class, id);
 
     if (ft == null){
-	return false;
-       }
+    	return false;
+    }
       
    EntityTransaction tx = em.getTransaction();
 
@@ -147,27 +182,53 @@ public static boolean removefoodtrack(int id)
    return true;
 }
 
-public static Foodtrack updateUser(Foodtrack ft){
+public static Foodtrack updateFoodTrack(Foodtrack ft){
 	
 	Foodtrack foodtrack =Foodtrack.getfoodtrackbyid(ft.getFoodtrackId());
 	
-	foodtrack.setFoodtrackFoodId(ft.getFoodtrackFoodId());
-	foodtrack.setFoodtrackMeal(ft.getFoodtrackMeal());
-	foodtrack.setFoodtrackTime(ft.getFoodtrackTime());
+	if (foodtrack == null)
+		return null;
+	
+	if(ft.getFoodtrackFoodId()!=0)foodtrack.setFoodtrackFoodId(ft.getFoodtrackFoodId());
+	if(ft.getFoodtrackMeal()!=null)foodtrack.setFoodtrackMeal(ft.getFoodtrackMeal());
+	if(ft.getFoodtrackTime()!=null)foodtrack.setFoodtrackTime(ft.getFoodtrackTime());
+	if(ft.getExternalsource()!=null)foodtrack.setExternalsource(ft.getExternalsource());
+	if(ft.getUser()!=null) foodtrack.setUser(ft.getUser());
+	if(ft.getFoodtrackAmount()!=0) foodtrack.setFoodtrackAmount(ft.getFoodtrackAmount());
+	if(ft.getFoodtrackUnit()!=null) foodtrack.setFoodtrackUnit(ft.getFoodtrackUnit());
 	  
 	
-	  EntityManager em =DBHelper.instance.createEntityManager();
-	  EntityTransaction tx = em.getTransaction();
+	 EntityManager em =DBHelper.instance.createEntityManager();
+	 EntityTransaction tx = em.getTransaction();
 
-	   tx.begin();
-	   foodtrack = em.merge(foodtrack);
-	   tx.commit();
+	 tx.begin();
+	 foodtrack = em.merge(foodtrack);
+	 tx.commit();
 
-	   em.close();
+	 em.close();
 	
-	   return foodtrack;
+	 return foodtrack;
 }
 
+public static List<Foodtrack> getFoodTrackOfUserByTimeRange(int user_id, Date fromDate, Date toDate){
+	EntityManager em = DBHelper.instance.createEntityManager();
+	List <Foodtrack> result = em.createNamedQuery("FoodTrack.getFoodTrackOfUserByTimeRange")
+									.setParameter("user_id", user_id)
+									.setParameter("afterDate", (fromDate))
+									.setParameter("beforeDate", Utils.getDateafter(toDate))
+									.getResultList();
+	em.close();
+	return result;
+}
+
+public static List<Foodtrack> getFoodTracksByUserId(int user_id){
+	EntityManager em = DBHelper.instance.createEntityManager();
+	List <Foodtrack> result = em.createNamedQuery("FoodTrack.getFoodTracksByUserId")
+									.setParameter("user_id", user_id)
+									.getResultList();
+	em.close();
+	return result;
+}
 
 public static List<Foodtrack> getAll() {
    EntityManager em = DBHelper.instance.createEntityManager();
@@ -176,6 +237,15 @@ public static List<Foodtrack> getAll() {
 
     em.close();
     return list;
+}
+
+
+public static void main(String[] args) {
+	/*List<Foodtrack> ft = Foodtrack.getFoodTrackOfUserByTimeRange(1, 
+			Utils.strToDate("2014-01-01"), Utils.strToDate("2014-01-10"));*/
+	List<Foodtrack> ft = Foodtrack.getFoodTracksByUserId(1);
+	System.out.println(ft.size());
+	System.out.println(ft.get(0).getFoodtrackMeal());
 }
 
 }
