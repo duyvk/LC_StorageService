@@ -16,6 +16,7 @@ import javax.jws.WebService;
 
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Goal;
+import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
@@ -317,6 +318,96 @@ public class StorageImpl implements Storage{
 		return Measurehistory.getMeaHisByTimeRange(user_id, meaDef_id, fromDate, toDate);
 	}
 
+	/*---------------------------LifeStatus Services--------------------------*/
+	@Override
+	public String addHealthStatus(@WebParam(name="lifestatus")Lifestatus lifestatus) {
+		// TODO Auto-generated method stub
+		
+		Lifestatus lf=null;
+		 Measurehistory mss=null;
+		if(lifestatus.getMeasuredefinition().getMeaDef_type().equalsIgnoreCase("LifeStatus"))
+		
+		{   lf=lifestatus.addLifestatus(lifestatus);
+		
+		  
+			   
+			   Measurehistory ms=new Measurehistory();
+			   
+			   ms.setUser(lifestatus.getUser());
+			   ms.setMeasuredefinition(lifestatus.getMeasuredefinition());
+			   ms.setMeaHis_updated_time(lifestatus.getLifeStatus_update_time());
+			   ms.setMeaHis_value(lifestatus.getLifeStatus_value());
+			   ms.setMeaHis_calories(0.0);
+			   
+			    mss=Measurehistory.addmeasurehistory(ms);
+			   
+		}
+		
+		if(lf==null)
+			return "error !";
+		else
+		
+		return ""+lf.getLifeStatus_id()+" :"+mss.getMeaHis_id();
+	}
+
+
+	@Override
+	public int addActvity(Lifestatus lifestatus) {
+		// TODO Auto-generated method stub
+		
+		
+		 Measurehistory mss=null;
+		if(lifestatus.getMeasuredefinition().getMeaDef_type().equalsIgnoreCase("Activity"))
+		
+		{
+			 Measurehistory ms=new Measurehistory();
+			   
+			   ms.setUser(lifestatus.getUser());
+			   ms.setMeasuredefinition(lifestatus.getMeasuredefinition());
+			   ms.setMeaHis_updated_time(lifestatus.getLifeStatus_update_time());
+			   ms.setMeaHis_value(lifestatus.getLifeStatus_value());
+			   ms.setMeaHis_calories(0.0);
+			   
+			    mss=Measurehistory.addmeasurehistory(ms);
+			
+		}
+		return mss.getMeaHis_id();
+	}
+
+
+	@Override
+	public String updateLifeStatus(int ls_id,double value) {
+		// TODO Auto-generated method stub
+
+		Lifestatus ls=
+		Lifestatus.getLifeStatusById(1201);
+		
+		
+		
+		Measurehistory ms=new Measurehistory();
+		   
+		   ms.setUser(ls.getUser());
+		   ms.setMeasuredefinition(ls.getMeasuredefinition());
+		   ms.setMeaHis_updated_time(ls.getLifeStatus_update_time());
+		   ms.setMeaHis_value(ls.getLifeStatus_value());
+		   ms.setMeaHis_calories(0.0);
+		   Measurehistory.addmeasurehistory(ms);
+		   
+		   
+		
+		   ls.setUser(ls.getUser());
+		   ls.setMeasuredefinition(ls.getMeasuredefinition());
+		   ls.setLifeStatus_update_time(ls.getLifeStatus_update_time());
+		   ls.setLifeStatus_value(10023);
+			Lifestatus lfs=Lifestatus.updateLifestatus(ls);
+		   
+		if(lfs == null)  return "error !";
+		
+		return ""+lfs.getLifeStatus_id();
+	}
+	
+	
+	
 	public static void main(String[] args) {
 		StorageImpl s = new StorageImpl();
 		List<Measurehistory> hisOfMeas = s.trackGoalbyUser(1, 1);

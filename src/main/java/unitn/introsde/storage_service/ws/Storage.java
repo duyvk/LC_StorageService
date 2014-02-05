@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Goal;
+import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
@@ -109,5 +110,14 @@ public interface Storage {
 	public List<Measurehistory> getMeaHisByTimeRange (@WebParam(name="user_id") int user_id,
 			@WebParam (name="meaDef_id") int meaDef_id, @WebParam (name="fromDate") Date fromDate,
 			@WebParam (name="toDate") Date toDate);
+	/*---------------------------MeasureHistory Services--------------------------*/
 	
+	@WebMethod (operationName="createLifeStatus")
+	public String addHealthStatus(@WebParam(name="lifeStatus") Lifestatus lifestatus);
+		
+	@WebMethod (operationName="createActivity")
+	public int addActvity(@WebParam(name="lifeStatus") Lifestatus lifestatus);
+	
+	@WebMethod (operationName="updateLifeStatus")
+	public String updateLifeStatus(@WebParam(name="lifeStatus") int ls_id,@WebParam(name="value") double value);	
 }

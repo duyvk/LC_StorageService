@@ -33,12 +33,12 @@ public class Measurehistory implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int meaHis_id;
 
-	private String meaHis_calories;
+	private double meaHis_calories;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date meaHis_updated_time;
 
-	private BigDecimal meaHis_value;
+	private double meaHis_value;
 
 	//bi-directional many-to-one association to Measuredefinition
 	@ManyToOne
@@ -61,11 +61,11 @@ public class Measurehistory implements Serializable {
 		this.meaHis_id = meaHis_id;
 	}
 
-	public String getMeaHis_calories() {
+	public double getMeaHis_calories() {
 		return this.meaHis_calories;
 	}
 
-	public void setMeaHis_calories(String meaHis_calories) {
+	public void setMeaHis_calories(double meaHis_calories) {
 		this.meaHis_calories = meaHis_calories;
 	}
 
@@ -77,11 +77,11 @@ public class Measurehistory implements Serializable {
 		this.meaHis_updated_time = meaHis_updated_time;
 	}
 
-	public BigDecimal getMeaHis_value() {
+	public double getMeaHis_value() {
 		return this.meaHis_value;
 	}
 
-	public void setMeaHis_value(BigDecimal meaHis_value) {
+	public void setMeaHis_value(double meaHis_value) {
 		this.meaHis_value = meaHis_value;
 	}
 

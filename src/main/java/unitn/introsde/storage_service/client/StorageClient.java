@@ -12,6 +12,7 @@ import javax.xml.ws.Service;
 
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Goal;
+import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
@@ -119,8 +120,9 @@ public class StorageClient {
 		
 		System.out.println("-----------------Test remove Goal by caregiver_id,goal_id-----------");
 		System.out.println(storage.removeGoalByCaregiver(2	, 601));
-		
+
 		System.out.println("-----------------Test add Goal -----------");
+/*
 		Goal newGoal = new Goal();
 		User gu = storage.getUserById(1);
 		Caregiver gcg = storage.getCaregiverById(2);
@@ -141,7 +143,7 @@ public class StorageClient {
 		newGoal.setGoalDesc("aaa");
 		
 		// add Goal
-		System.out.println(storage.addGoal(newGoal));
+		System.out.println(storage.addGoal(newGoal));*/
 /*		
 		System.out.println("-----------------Test update Goal -----------");
 		Goal updatedGoal = new Goal();
@@ -166,6 +168,35 @@ public class StorageClient {
 		updatedGoal3.setMeasuredefinition(Measuredefinition.getMeasureDefById(2));
 		
 		System.out.println(storage.updateGoalByUser(1000, updatedGoal3));
-*/	}
+*/	
+	/*	System.out.println("-----------------Test add lifeStatus -----------");	
+		
+			Lifestatus lf=new Lifestatus();
+			
+			User user=storage.getUserById(2);
+			Measuredefinition di = storage.getMeaDefById(4);
+		
+			
+			lf.setUser(user);
+	        lf.setMeasuredefinition(di);
+	       try {
+				lf.setLifeStatus_update_time(format.parse("2014-03-15") );
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        lf.setLifeStatus_value(89.0);
+	        
+	        
+	        System.out.println(storage.addHealthStatus(lf));*/
+	        
+	     System.out.println("-----------------Test update lifeStatus -----------");	
+	
+	        System.out.println(storage.updateLifeStatus(2, 100));
+	        
+	        
+	
+	
+	}
 
 }

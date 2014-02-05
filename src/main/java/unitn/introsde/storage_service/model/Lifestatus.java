@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import unitn.introsde.storage_service.DAO.DBHelper;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 
@@ -29,6 +30,9 @@ public class Lifestatus implements Serializable {
 	private int lifeStatus_id;
 
 	private double lifeStatus_value;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lifeStatus_updated_time; 
 
 	//bi-directional many-to-one association to Measuredefinition
 	@ManyToOne
@@ -75,7 +79,13 @@ public class Lifestatus implements Serializable {
 		this.user = user;
 	}
 
-	
+	public Date getLifeStatus_update_time() {
+		return lifeStatus_updated_time;
+	}
+
+	public void setLifeStatus_update_time(Date lifeStatus_updated_time) {
+		this.lifeStatus_updated_time = lifeStatus_updated_time;
+	}
 	
 ////////////////////////////////////////
 // CRUD operation for LifeStatus Model 
@@ -95,11 +105,25 @@ public class Lifestatus implements Serializable {
 	
 
 	public static Lifestatus addLifestatus(Lifestatus lifestatus){
-	     EntityManager em = DBHelper.instance.createEntityManager();
-	     EntityTransaction tx = em.getTransaction();
+	    
+		
+		System.out.println("type: lifestatus");
 
+	     
+			if(lifestatus == null)
+				return null;
+			
+			if(lifestatus.getMeasuredefinition()==null || lifestatus.getUser() ==null 
+					||lifestatus.getLifeStatus_value()==0|| lifestatus.getLifeStatus_update_time()==null)
+				
+				return null;
+			
+			 EntityManager em = DBHelper.instance.createEntityManager();
+		     EntityTransaction tx = em.getTransaction();
+	     
 	     tx.begin();
 	     em.persist(lifestatus);
+	     
 	     tx.commit();
 
 
@@ -131,41 +155,7 @@ public class Lifestatus implements Serializable {
 	}
 
 	
-	/*public static Lifestatus addUserLifeStatus(int user_id,int measure_def,Double value){
-		
-		Lifestatus lifestatus=new Lifestatus();
-		
-		lifestatus.setUser(User.getPersonById(user_id));
-		lifestatus.setMeasuredefinition(Measuredefinition.getMeasureDefById(measure_def));
-		lifestatus.setLifeStatus_value(value);
-		
-		 EntityManager em = DBHelper.instance.createEntityManager();
-	     EntityTransaction tx = em.getTransaction();
-
-	     tx.begin();
-	     em.persist(lifestatus);
-	     tx.commit();
-
-
-	    DBHelper.instance.closeConnections(em);
-	    return lifestatus;
-		
-	}
 	
-	public static Lifestatus getspecificMeasure(int user_id,int measure_def_id){
-		
-EntityManager em = DBHelper.instance.createEntityManager();
-		
-		Lifestatus lf = (Lifestatus) em.createQuery("select lf from Lifestatus lf where lf.user.userId = :user_id and lf.measuredefinition.meaDef_id =:measure_def_id")
-				         .setParameter("user_id", user_id)
-				         .setParameter("measure_def_id", measure_def_id)
-				         .getSingleResult();
-		
-		DBHelper.instance.closeConnections(em);
-		return lf;
-		
-	}*/
-
 public static boolean removeLifeStatus(int id)
 {
 
