@@ -106,7 +106,7 @@ public interface Storage {
 	public List<Measurehistory> getMeaHisByTimeRange (@WebParam(name="user_id") int user_id,
 			@WebParam (name="meaDef_id") int meaDef_id, @WebParam (name="fromDate") Date fromDate,
 			@WebParam (name="toDate") Date toDate);
-	/*---------------------------MeasureHistory Services--------------------------*/
+	/*---------------------------LifeStatus Services--------------------------*/
 	
 	@WebMethod (operationName="createLifeStatus")
 	public String addHealthStatus(@WebParam(name="lifeStatus") Lifestatus lifestatus);
@@ -115,5 +115,8 @@ public interface Storage {
 	public int addActvity(@WebParam(name="lifeStatus") Lifestatus lifestatus);
 	
 	@WebMethod (operationName="updateLifeStatus")
-	public String updateLifeStatus(@WebParam(name="lifeStatus") int ls_id,@WebParam(name="value") double value);	
+	public String updateLifeStatus(@WebParam(name="lifeStatus") int ls_id,@WebParam(name="value") double value);
+	
+	@WebMethod(operationName="readLifeStatus")
+	public Lifestatus readLifeStatus(@WebParam(name="lifeStatus") int ls_id);
 }

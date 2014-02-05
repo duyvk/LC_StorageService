@@ -280,6 +280,7 @@ public class StorageImpl implements Storage{
 
 	/*---------------------------LifeStatus Services--------------------------*/
 	@Override
+	@WebMethod(operationName = "createLifeStatus")
 	public String addHealthStatus(@WebParam(name="lifestatus")Lifestatus lifestatus) {
 		// TODO Auto-generated method stub
 		
@@ -312,6 +313,7 @@ public class StorageImpl implements Storage{
 
 
 	@Override
+	@WebMethod(operationName = "createActivity")
 	public int addActvity(Lifestatus lifestatus) {
 		// TODO Auto-generated method stub
 		
@@ -336,6 +338,7 @@ public class StorageImpl implements Storage{
 
 
 	@Override
+	@WebMethod(operationName = "updateLifeStatus")
 	public String updateLifeStatus(int ls_id,double value) {
 		// TODO Auto-generated method stub
 
@@ -364,6 +367,14 @@ public class StorageImpl implements Storage{
 		if(lfs == null)  return "error !";
 		
 		return ""+lfs.getLifeStatus_id();
+	}
+
+
+
+	@Override
+	@WebMethod(operationName = "readLifeStatus")
+	public Lifestatus readLifeStatus(int ls_id) {
+		return Lifestatus.getLifeStatusById(ls_id);
 	}
 	
 	
