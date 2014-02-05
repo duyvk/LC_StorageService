@@ -25,7 +25,11 @@ public interface Storage {
 	
 	@WebMethod(operationName = "searchUserbyName")
 	public List<User> searchUserbyName(@WebParam(name="searchString") String searchString, @WebParam(name ="max") int max);
-
+	
+	
+	/* -------------------------GoalTracking Service --------------------*/
+	@WebMethod(operationName = "trackGoalbyUser")
+	public List<Measurehistory> trackGoalbyUser (@WebParam(name="user_id") int user_id, @WebParam(name="goal_id") int goal_id);
 	/*---------------------------User Services--------------------------*/
 	@WebMethod(operationName = "readUser")
 	public User getUserById(@WebParam(name = "user_id") int user_id);

@@ -20,12 +20,52 @@ import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
 import unitn.introsde.storage_service.utils.LetterPairSimilarity;
+import unitn.introsde.storage_service.utils.Utils;
 import unitn.introsde.storage_service.utils.ValueComparator;
 
 @WebService (endpointInterface= "unitn.introsde.storage_service.ws.Storage", serviceName="StorageService")
 public class StorageImpl implements Storage{
 	
-	// calculator service
+
+	/* -------------------------GoalTracking Service --------------------*/
+	@Override
+	@WebMethod(operationName = "trackGoalbyUser")
+	public List<Measurehistory> trackGoalbyUser(@WebParam(name = "user_id") int user_id,
+			@WebParam(name = "goal_id") int goal_id) {
+		
+		Goal trackedGoal = Goal.getGoalById(goal_id);
+		if (trackedGoal == null)
+			return new ArrayList<Measurehistory>();
+		// check goal belong to user or not
+		if (trackedGoal.getUser().getUserId()!= user_id)
+			return new ArrayList<Measurehistory>();
+		// get list of activity
+		List<Measurehistory> hisOfMeas = 
+				Measurehistory.getMeaHisByTimeRange(user_id, trackedGoal.getMeasuredefinition().getMeaDef_id(),
+						trackedGoal.getGoal_from_date(), trackedGoal.getGoal_to_date());
+
+/*		
+		String unit = (trackedGoal.getMeasuredefinition().getMeaDef_unit()!=null)? trackedGoal.getMeasuredefinition().getMeaDef_unit() : " unit ";
+		String goalDes = 	"\nGoalID:\t"+trackedGoal.getGoalId() +
+						 	"\n  about:\t"+trackedGoal.getMeasuredefinition().getMeaDef_name()+
+						 	"\n  expect:\t"+trackedGoal.getGoal_expected_value()+" "+unit+
+						 	"\n  type:\t\t"+trackedGoal.getGoal_type()+
+						 	"\n  from:\t\t"+Utils.dateToString(trackedGoal.getGoal_from_date())+
+						 	"\n  to:\t\t"+Utils.dateToString(trackedGoal.getGoal_to_date())+
+						 	"\n\t* * *";
+		// check goal type and do statistics
+		System.out.println(goalDes);
+		System.out.println("Your Progress:");
+		
+		for (Measurehistory mh : hisOfMeas){
+			System.out.println(Utils.timestampToString(mh.getMeaHis_updated_time())
+					+ "\t"+ mh.getMeaHis_value()+" "+ unit);
+		}*/
+		
+		return hisOfMeas;
+	}
+	
+	// -------------------------calculator service----------------------------------------
 	@Override
 	@WebMethod(operationName = "searchUserbyName")
 	public List<User> searchUserbyName(
@@ -277,6 +317,29 @@ public class StorageImpl implements Storage{
 		return Measurehistory.getMeaHisByTimeRange(user_id, meaDef_id, fromDate, toDate);
 	}
 
+	public static void main(String[] args) {
+		StorageImpl s = new StorageImpl();
+		List<Measurehistory> hisOfMeas = s.trackGoalbyUser(1, 1);
+		if (hisOfMeas.size() !=0){
+			Goal trackedGoal = s.getGoalById(1);
+			String unit = (trackedGoal.getMeasuredefinition().getMeaDef_unit()!=null)? trackedGoal.getMeasuredefinition().getMeaDef_unit() : " unit ";
+			String goalDes = 	"\nGoalID:\t"+trackedGoal.getGoalId() +
+							 	"\n  about:\t"+trackedGoal.getMeasuredefinition().getMeaDef_name()+
+							 	"\n  expect:\t"+trackedGoal.getGoal_expected_value()+" "+unit+
+							 	"\n  type:\t\t"+trackedGoal.getGoal_type()+
+							 	"\n  from:\t\t"+Utils.dateToString(trackedGoal.getGoal_from_date())+
+							 	"\n  to:\t\t"+Utils.dateToString(trackedGoal.getGoal_to_date())+
+							 	"\n\t* * *";
+			// check goal type and do statistics
+			System.out.println(goalDes);
+			System.out.println("Your Progress:");
+			
+			for (Measurehistory mh : hisOfMeas){
+				System.out.println(Utils.timestampToString(mh.getMeaHis_updated_time())
+						+ "\t"+ mh.getMeaHis_value()+" "+ unit);
+				}
+		}
+	}
 	
 
 }

@@ -13,7 +13,9 @@ import javax.xml.ws.Service;
 import unitn.introsde.storage_service.model.Caregiver;
 import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Measuredefinition;
+import unitn.introsde.storage_service.model.Measurehistory;
 import unitn.introsde.storage_service.model.User;
+import unitn.introsde.storage_service.utils.Utils;
 import unitn.introsde.storage_service.ws.Storage;
 
 public class StorageClient {
@@ -37,6 +39,29 @@ public class StorageClient {
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		// test your method here
+		
+		/* -------------------------GoalTracking Service --------------------*/
+		List<Measurehistory> hisOfMeas = storage.trackGoalbyUser(1, 1);
+		if (hisOfMeas.size() !=0){
+			Goal trackedGoal = storage.getGoalById(1);
+			String unit = (trackedGoal.getMeasuredefinition().getMeaDef_unit()!=null)? trackedGoal.getMeasuredefinition().getMeaDef_unit() : " unit ";
+			String goalDes = 	"\nGoalID:\t"+trackedGoal.getGoalId() +
+							 	"\n  about:\t"+trackedGoal.getMeasuredefinition().getMeaDef_name()+
+							 	"\n  expect:\t"+trackedGoal.getGoal_expected_value()+" "+unit+
+							 	"\n  type:\t\t"+trackedGoal.getGoal_type()+
+							 	"\n  from:\t\t"+Utils.dateToString(trackedGoal.getGoal_from_date())+
+							 	"\n  to:\t\t"+Utils.dateToString(trackedGoal.getGoal_to_date())+
+							 	"\n\t* * *";
+			// check goal type and do statistics
+			System.out.println(goalDes);
+			System.out.println("Your Progress:");
+			
+			for (Measurehistory mh : hisOfMeas){
+				System.out.println(Utils.timestampToString(mh.getMeaHis_updated_time())
+						+ "\t"+ mh.getMeaHis_value()+" "+ unit);
+				}
+		}
+		
 /*		
 		System.out.println("----------------------------CALCULATOR SERVICES------------------------------------");
 		List<User> returnUsers = storage.searchUserbyName("duy khuong", 4);
@@ -79,7 +104,7 @@ public class StorageClient {
 		//System.out.println(storage.removeUser(151));
 		
 		
-		
+		*/
 		System.out.println("----------------------------GOAL SERVICES------------------------------------");
 		System.out.println("-----------------Test get Goal by goal_id-----------");
 		Goal g = storage.getGoalById(1);
@@ -94,7 +119,7 @@ public class StorageClient {
 		
 		System.out.println("-----------------Test remove Goal by caregiver_id,goal_id-----------");
 		System.out.println(storage.removeGoalByCaregiver(2	, 601));
-		*/
+		
 		System.out.println("-----------------Test add Goal -----------");
 		Goal newGoal = new Goal();
 		User gu = storage.getUserById(1);
