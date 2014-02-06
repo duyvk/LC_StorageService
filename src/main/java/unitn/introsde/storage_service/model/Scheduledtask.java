@@ -158,9 +158,9 @@ public class Scheduledtask implements Serializable {
 	}
 	
 
-    ////////////////////////////////// 
-    // CRUD operation for User Model 
-      /////////////////////////////////
+    //////////////////////////////////////////// 
+    // CRUD operation for Scheduled Task Model 
+      //////////////////////////////////////////
 	
 	public static Scheduledtask getScheduledtaskById(Integer id) {
 	     EntityManager em = DBHelper.instance.createEntityManager();

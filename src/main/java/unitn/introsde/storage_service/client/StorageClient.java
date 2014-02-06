@@ -192,7 +192,7 @@ public class StorageClient {
 	        
 	     System.out.println("-----------------Test update lifeStatus -----------");	
 	
-	        System.out.println(storage.updateLifeStatus(2, 100));
+	      //  System.out.println(storage.updateLifeStatus(2, 100));
 	        
 	        
 	
