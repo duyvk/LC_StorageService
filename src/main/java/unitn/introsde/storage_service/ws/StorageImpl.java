@@ -335,6 +335,43 @@ public class StorageImpl implements Storage{
 	/*---------------------------MeasureHistory Services--------------------------*/
 	
 	@Override
+	@WebMethod(operationName = "readMeasureHistory")
+	public Measurehistory getMeasureHistoryById(
+			@WebParam(name = "measureHistory_id") int measureHistory_id) {
+		return Measurehistory.getmeasurehistoryById(measureHistory_id);
+	}
+	
+	
+	@Override
+	@WebMethod(operationName="creatMeasureHistory")
+	public int addMeasureHistory(@WebParam(name = "measurehistory") Measurehistory measurehistory) {
+			
+		Measurehistory measureh = Measurehistory.addmeasurehistory(measurehistory);
+		
+		if (measureh == null)
+			return -1;
+		
+		return measureh.getMeaHis_id();
+	
+	}
+
+	@Override
+	@WebMethod(operationName = "updateMeasureHistory")
+	public int updateMeasureHistory(@WebParam(name="user_id") int user_id,@WebParam(name="measurehistory") Measurehistory measurehistory) {
+		
+		Measurehistory measureH =Measurehistory.getmeasurehistoryById(measurehistory.getMeaHis_id());
+		if (measureH == null)
+			return -1;
+		if (measureH.getUser().getUserId()!= user_id)
+			return -1;
+		
+		return Measurehistory.updatemeasurehistory(measureH).getMeaHis_id();	
+		
+	}
+	
+	
+	
+	@Override
 	@WebMethod(operationName = "getMeaHisByTimeRange")
 	public List<Measurehistory> getMeaHisByTimeRange(
 			@WebParam(name = "user_id") int user_id,
@@ -348,10 +385,9 @@ public class StorageImpl implements Storage{
 	/*---------------------------LifeStatus Services--------------------------*/
 	@Override
 	@WebMethod(operationName = "createLifeStatus")
-	public String addHealthStatus(@WebParam(name="lifestatus")Lifestatus lifestatus) {
-		// TODO Auto-generated method stub
-		
-		Lifestatus lf=null;
+	public int addHealthStatus(@WebParam(name="lifestatus")Lifestatus lifestatus) {
+	
+		/*Lifestatus lf=null;
 		 Measurehistory mss=null;
 		if(lifestatus.getMeasuredefinition().getMeaDef_type().equalsIgnoreCase("LifeStatus"))
 		
@@ -375,15 +411,22 @@ public class StorageImpl implements Storage{
 			return "error !";
 		else
 		
-		return ""+lf.getLifeStatus_id()+" :"+mss.getMeaHis_id();
+		return ""+lf.getLifeStatus_id()+" :"+mss.getMeaHis_id();*/
+		
+		Lifestatus lifeS = Lifestatus.addLifestatus(lifestatus);
+		
+		if (lifeS == null)
+			return -1;
+		
+		return lifeS.getLifeStatus_id();
+		
+		
 	}
 
 
-	@Override
+	/*@Override
 	@WebMethod(operationName = "createActivity")
-	public int addActvity(Lifestatus lifestatus) {
-		// TODO Auto-generated method stub
-		
+	public int addActvity(@WebParam(name="lifeStatus") Lifestatus lifestatus) {
 		
 		 Measurehistory mss=null;
 		if(lifestatus.getMeasuredefinition().getMeaDef_type().equalsIgnoreCase("Activity"))
@@ -401,49 +444,47 @@ public class StorageImpl implements Storage{
 			
 		}
 		return mss.getMeaHis_id();
-	}
+		
+		if(lifestatus.getMeasuredefinition().getMeaDef_type().equalsIgnoreCase("Activity")){
+		
+     Measurehistory measureH = Measurehistory.addmeasurehistory(mh);
+		
+		if (lifeS == null)
+			return -1;
+		}
+		return lifeS.getLifeStatus_id();
+		
+	}*/
 
 
 	@Override
 	@WebMethod(operationName = "updateLifeStatus")
-	public String updateLifeStatus(int ls_id,double value) {
-		// TODO Auto-generated method stub
-
-		Lifestatus ls=
-		Lifestatus.getLifeStatusById(1201);
+	public int updateLifeStatus(@WebParam(name="user_id") int user_id,@WebParam(name="lifestatus") Lifestatus lifestatus) {
 		
-		if (ls == null)
-			return null;
+		Lifestatus lifeS =Lifestatus.getLifeStatusById(lifestatus.getLifeStatus_id());
+		if (lifeS == null)
+			return -1;
+		if (lifeS.getUser().getUserId()!= user_id)
+			return -1;
 		
-		Measurehistory ms=new Measurehistory();
-		   
-		ms.setUser(ls.getUser());
-		ms.setMeasuredefinition(ls.getMeasuredefinition());
-		ms.setMeaHis_updated_time(ls.getLifeStatus_update_time());
-		ms.setMeaHis_value(ls.getLifeStatus_value());
-		ms.setMeaHis_calories(0.0);
-		Measurehistory.addmeasurehistory(ms);
-
-		ls.setUser(ls.getUser());
-		ls.setMeasuredefinition(ls.getMeasuredefinition());
-		ls.setLifeStatus_update_time(ls.getLifeStatus_update_time());
-		ls.setLifeStatus_value(10023);
-		Lifestatus lfs=Lifestatus.updateLifestatus(ls);
-		   
-		if(lfs == null)  return "error!";
+		return Lifestatus.updateLifestatus(lifeS).getLifeStatus_id();	
 		
-		return ""+lfs.getLifeStatus_id();
 	}
-
-
 
 	@Override
 	@WebMethod(operationName = "readLifeStatus")
-	public Lifestatus readLifeStatus(int ls_id) {
+	public Lifestatus readLifeStatus(@WebParam(name="lifeStatus_id")  int ls_id) {
 		return Lifestatus.getLifeStatusById(ls_id);
 	}
 	
 	
+	@Override
+	@WebMethod(operationName = "removeLifeStatus")
+	public boolean removeLifeStatus(@WebParam(name = "lifeStatus_id") int ls_id) {
+		// TODO Auto-generated method stub
+		
+		return Lifestatus.removeLifeStatus(ls_id);
+	}
 	
 
 	/* -------------------------External (Food) Source Service --------------------*/
@@ -631,4 +672,6 @@ public class StorageImpl implements Storage{
 		StorageImpl i = new StorageImpl();
 		System.out.println(i.getFoodCaloriesOfFoodTrack(1));
 	}
+
+	
 }

@@ -115,6 +115,17 @@ public interface Storage {
 	
 	
 	/*---------------------------MeasureHistory Services--------------------------*/
+
+	@WebMethod(operationName="readMeasureHistory")
+	Measurehistory getMeasureHistoryById(@WebParam(name = "measureHistory_id") int measureHistory_id);
+
+	
+	@WebMethod(operationName="creatMeasureHistory")
+    public int addMeasureHistory(@WebParam(name="MeasureHistory") Measurehistory measurehistory); 	
+	
+	@WebMethod(operationName="updateMeasureHistory")
+	int updateMeasureHistory(@WebParam(name="user_id") int user_id,@WebParam(name="measurehistory") Measurehistory measurehistory);
+	
 	@WebMethod(operationName="getMeaHisByTimeRange")
 	public List<Measurehistory> getMeaHisByTimeRange (@WebParam(name="user_id") int user_id,
 			@WebParam (name="meaDef_id") int meaDef_id, @WebParam (name="fromDate") Date fromDate,
@@ -122,16 +133,19 @@ public interface Storage {
 	/*---------------------------LifeStatus Services--------------------------*/
 	
 	@WebMethod (operationName="createLifeStatus")
-	public String addHealthStatus(@WebParam(name="lifeStatus") Lifestatus lifestatus);
+	public int addHealthStatus(@WebParam(name="lifeStatus") Lifestatus lifestatus);
 		
-	@WebMethod (operationName="createActivity")
-	public int addActvity(@WebParam(name="lifeStatus") Lifestatus lifestatus);
+	/*@WebMethod (operationName="createActivity")
+	public int addActvity(@WebParam(name="lifeStatus") Lifestatus lifestatus);*/
 	
 	@WebMethod (operationName="updateLifeStatus")
-	public String updateLifeStatus(@WebParam(name="lifeStatus") int ls_id,@WebParam(name="value") double value);
+	public int updateLifeStatus(@WebParam(name="user_id") int user_id,@WebParam(name="lifestatus") Lifestatus lifestatus);
 	
 	@WebMethod(operationName="readLifeStatus")
-	public Lifestatus readLifeStatus(@WebParam(name="lifeStatus") int ls_id);
+	public Lifestatus readLifeStatus(@WebParam(name="lifeStatus_id") int ls_id);
+	
+	@WebMethod(operationName = "removeLifeStatus")
+	public boolean removeLifeStatus(@WebParam(name = "lifeStatus_id") int ls_id);
 	
 	/*---------------------------ExternalSource Services--------------------------*/
 	@WebMethod(operationName = "readFoodSource")
@@ -187,5 +201,8 @@ public interface Storage {
 	
 	@WebMethod(operationName = "getFoodCaloriesOfFoodTrack")
 	public int getFoodCaloriesOfFoodTrack (@WebParam(name = "foodTrack_id") int foodTrack_id);
+
+
+	
 	
 }
