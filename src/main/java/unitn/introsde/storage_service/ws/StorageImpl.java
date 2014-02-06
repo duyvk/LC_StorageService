@@ -717,10 +717,8 @@ public class StorageImpl implements Storage{
 				todayTasks.add(task);
 		}
 		
-		
 		return todayTasks;
 	}
-	
 	
 	public static void main(String[] args) {
 		StorageImpl st = new StorageImpl();
