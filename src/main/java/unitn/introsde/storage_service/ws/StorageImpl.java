@@ -765,6 +765,4 @@ public class StorageImpl implements Storage{
 		StorageImpl st = new StorageImpl();
 		System.out.println(st.getTasksTodayByUserId(1).size());
 	}
-
-	
 }
