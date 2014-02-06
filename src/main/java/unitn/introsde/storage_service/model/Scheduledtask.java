@@ -3,11 +3,15 @@ package unitn.introsde.storage_service.model;
 import java.io.Serializable;
 
 import javax.persistence.*;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import unitn.introsde.storage_service.DAO.DBHelper;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -16,10 +20,12 @@ import java.util.Date;
  */
 @Entity
 @NamedQueries({
-	@NamedQuery(name="Scheduledtask.findAll", query="SELECT s FROM Scheduledtask s")
+	@NamedQuery(name="Scheduledtask.findAll", query="SELECT s FROM Scheduledtask s"),
+	@NamedQuery(name= "Scheduledtask.getTaskByUserId", query="select s from Scheduledtask s where s.user.userId = :id"),
+	@NamedQuery(name="Scheduledtask.getTaskByCaregiverId", query = "select s from Scheduledtask s where s.caregiver.cgId = :id")
 	})
 @XmlRootElement
-@Table(name="scheduletask")
+@Table(name="scheduledtask")
 public class Scheduledtask implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -37,8 +43,9 @@ public class Scheduledtask implements Serializable {
 	private String schTask_address;
 
 	private int schTask_cg_checked;
-
-	private int schTask_note;
+	
+	@Lob
+	private String schTask_note;
 
 	private int schTask_status;
 
@@ -102,11 +109,11 @@ public class Scheduledtask implements Serializable {
 		this.schTask_cg_checked = schTask_cg_checked;
 	}
 
-	public int getSchTask_note() {
+	public String getSchTask_note() {
 		return this.schTask_note;
 	}
 
-	public void setSchTask_note(int schTask_note) {
+	public void setSchTask_note(String schTask_note) {
 		this.schTask_note = schTask_note;
 	}
 
@@ -163,17 +170,23 @@ public class Scheduledtask implements Serializable {
 	}
 
 	public static Scheduledtask addScheduledtask(Scheduledtask scheduledtask){
-	     EntityManager em = DBHelper.instance.createEntityManager();
-	     EntityTransaction tx = em.getTransaction();
-
-	     tx.begin();
-	     em.persist(scheduledtask);
-	     tx.commit();
-
+		if (scheduledtask == null)
+			return null;
+		if(scheduledtask.getCaregiver()==null||scheduledtask.getUser()==null
+				||scheduledtask.getTasktype()==null|| scheduledtask.getScheTask_from_time()==null
+				||scheduledtask.getScheTask_to_time()==null)
+			return null;
+		
+		EntityManager em = DBHelper.instance.createEntityManager();
+		EntityTransaction tx = em.getTransaction();
+		tx.begin();
+		em.persist(scheduledtask);
+		tx.commit();
 
 	    DBHelper.instance.closeConnections(em);
 	    return scheduledtask;
 	}
+	
 	public static boolean removeScheduledtask(int id)
 	{
 
@@ -182,8 +195,8 @@ public class Scheduledtask implements Serializable {
 	   Scheduledtask s = em.find(Scheduledtask.class, id);
 
 	    if (s== null){
-		return false;
-	       }
+	    	return false;
+	    }
 	      
 	   EntityTransaction tx = em.getTransaction();
 
@@ -201,16 +214,18 @@ public class Scheduledtask implements Serializable {
 		
 		Scheduledtask scheduledtask =Scheduledtask.getScheduledtaskById(s.getScheTask_id());
 		
-		scheduledtask.setUser(s.getUser());
-		scheduledtask.setCaregiver(s.getCaregiver());
-		scheduledtask.setScheTask_from_time(s.getScheTask_from_time());
-		scheduledtask.setScheTask_to_time(s.getScheTask_to_time());
-		scheduledtask.setSchTask_address(s.getSchTask_address());
+		if(scheduledtask == null)
+			return null;
+		if(s.getUser()!=null)scheduledtask.setUser(s.getUser());
+		if(s.getCaregiver()!=null)scheduledtask.setCaregiver(s.getCaregiver());
+		if(s.getScheTask_from_time()!=null)scheduledtask.setScheTask_from_time(s.getScheTask_from_time());
+		if(s.getScheTask_to_time()!=null)scheduledtask.setScheTask_to_time(s.getScheTask_to_time());
+		if(s.getSchTask_address()!=null)scheduledtask.setSchTask_address(s.getSchTask_address());
 		scheduledtask.setSchTask_cg_checked(s.getSchTask_cg_checked());
 		scheduledtask.setSchTask_user_checked(s.getSchTask_user_checked());
-		scheduledtask.setSchTask_note(s.getSchTask_note());
+		if(s.getSchTask_note()!=null)scheduledtask.setSchTask_note(s.getSchTask_note());
 		scheduledtask.setSchTask_status(s.getSchTask_status());
-		scheduledtask.setTasktype(s.getTasktype());
+		if(s.getTasktype()!=null)scheduledtask.setTasktype(s.getTasktype());
 
 		  EntityManager em =DBHelper.instance.createEntityManager();
 		  EntityTransaction tx = em.getTransaction();
@@ -222,6 +237,45 @@ public class Scheduledtask implements Serializable {
 		   em.close();
 		
 		   return scheduledtask;
+	}
+	
+	public static List<Scheduledtask> getTasksByUserId( int user_id){
+		EntityManager em = DBHelper.instance.createEntityManager();
+		List<Scheduledtask> ut = em.createNamedQuery("Scheduledtask.getTaskByUserId")
+									.setParameter("id", user_id).getResultList();
+		em.close();
+		return ut;
+	}
+	
+	public static List<Scheduledtask> getTasksByCaregiverId( int cg_id){
+		EntityManager em = DBHelper.instance.createEntityManager();
+		List<Scheduledtask> ut = em.createNamedQuery("Scheduledtask.getTaskByCaregiverId")
+									.setParameter("id", cg_id).getResultList();
+		em.close();
+		return ut;
+	}
+	
+	public static boolean removeTaskByUserId( int user_id, int task_id) {
+		Scheduledtask task = getScheduledtaskById(task_id);
+		if (task == null)
+			return false;
+		if (task.getUser().getUserId()!=user_id)
+			return false;
+		return removeScheduledtask(task_id);		
+	}
+	
+	public static boolean removeTaskByCaregiverId( int cg_id, int task_id) {
+		Scheduledtask task = getScheduledtaskById(task_id);
+		if (task==null)
+			return false;
+		if (task.getCaregiver().getCgId()!=cg_id)
+			return false;
+		return removeScheduledtask(task_id);		
+	}
+	
+
+	
+	public static void main(String[] args) {
 	}
 
 }
