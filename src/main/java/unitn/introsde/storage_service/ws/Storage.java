@@ -20,6 +20,7 @@ import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
+import unitn.introsde.storage_service.model.Scheduledtask;
 import unitn.introsde.storage_service.model.User;
 
 @WebService
@@ -40,6 +41,10 @@ public interface Storage {
 	/* -------------------------GoalTracking Service --------------------*/
 	@WebMethod(operationName = "trackGoalbyUser")
 	public List<Measurehistory> trackGoalbyUser (@WebParam(name="user_id") int user_id, @WebParam(name="goal_id") int goal_id);
+	
+	/*------------------------- SendReminder Service -------------------*/
+	
+	
 	/*---------------------------User Services--------------------------*/
 	@WebMethod(operationName = "readUser")
 	public User getUserById(@WebParam(name = "user_id") int user_id);
@@ -204,5 +209,30 @@ public interface Storage {
 
 
 	
+	
+	/*----------------------------Task service ----------------------------------*/
+	@WebMethod(operationName = "readTask")
+	public Scheduledtask readTask(@WebParam(name = "task_id") int task_id);
+
+	@WebMethod(operationName = "createTask")
+	public int addTask(@WebParam(name = "task") Scheduledtask task);
+
+	@WebMethod(operationName = "updateTask")
+	public int updateTask(@WebParam(name = "task") Scheduledtask task);
+
+	@WebMethod(operationName = "removeTask")
+	public boolean removeTask(@WebParam(name = "task_id") int task_id);
+	
+	@WebMethod(operationName="getTasksByUserId")
+	public List<Scheduledtask> getTasksByUserId (@WebParam(name="user_id") int user_id);
+	
+	@WebMethod(operationName="getTasksByCaregiverId")
+	public List<Scheduledtask> getTasksByCaregiverId (@WebParam(name="cg_id") int cg_id);
+	
+	@WebMethod(operationName="getTasksTodayByUserId")
+	public List<Scheduledtask> getTasksTodayByUserId(@WebParam(name="user_id") int user_id);
+	
+	@WebMethod(operationName ="getTasksTodayByCaregiverId")
+	public List<Scheduledtask> getTasksTodayByCaregiverId (@WebParam(name="cg_id") int cg_id);
 	
 }

@@ -1,6 +1,7 @@
 package unitn.introsde.storage_service.ws;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -25,6 +26,7 @@ import unitn.introsde.storage_service.model.Goal;
 import unitn.introsde.storage_service.model.Lifestatus;
 import unitn.introsde.storage_service.model.Measuredefinition;
 import unitn.introsde.storage_service.model.Measurehistory;
+import unitn.introsde.storage_service.model.Scheduledtask;
 import unitn.introsde.storage_service.model.User;
 import unitn.introsde.storage_service.utils.CaregiverValueComparator;
 import unitn.introsde.storage_service.utils.LetterPairSimilarity;
@@ -668,9 +670,102 @@ public class StorageImpl implements Storage{
 		}
 		return 0;
 	}
+
+	/* -------------------------Scheduled tasks Service--------------------*/
+	
+	@Override
+	@WebMethod(operationName = "readTask")
+	public Scheduledtask readTask(@WebParam(name = "task_id") int task_id) {
+		return Scheduledtask.getScheduledtaskById(task_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "createTask")
+	public int addTask(@WebParam(name = "task") Scheduledtask task) {
+		Scheduledtask st = Scheduledtask.addScheduledtask(task);
+		if(st == null)
+			return -1;
+		return st.getScheTask_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "updateTask")
+	public int updateTask(@WebParam(name = "task") Scheduledtask task) {
+		Scheduledtask st = Scheduledtask.updateScheduledtask(task);
+		if(st == null)
+			return -1;
+		return st.getScheTask_id();
+	}
+
+	@Override
+	@WebMethod(operationName = "removeTask")
+	public boolean removeTask(@WebParam(name = "task_id") int task_id) {
+		return Scheduledtask.removeScheduledtask(task_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "getTasksByUserId")
+	public List<Scheduledtask> getTasksByUserId(
+			@WebParam(name = "user_id") int user_id) {
+		return Scheduledtask.getTasksByUserId(user_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "getTasksByCaregiverId")
+	public List<Scheduledtask> getTasksByCaregiverId(
+			@WebParam(name = "cg_id") int cg_id) {
+		return Scheduledtask.getTasksByCaregiverId(cg_id);
+	}
+
+	@Override
+	@WebMethod(operationName = "getTasksTodayByUserId")
+	public List<Scheduledtask> getTasksTodayByUserId(
+			@WebParam(name = "user_id") int user_id) {
+		List<Scheduledtask> allTasks = Scheduledtask.getTasksByUserId(user_id);
+		return todayTask(allTasks);
+	}
+
+	@Override
+	@WebMethod(operationName = "getTasksTodayByCaregiverId")
+	public List<Scheduledtask> getTasksTodayByCaregiverId(
+			@WebParam(name = "cg_id") int cg_id) {
+		List<Scheduledtask> allTasks = Scheduledtask.getTasksByUserId(cg_id);
+		return todayTask(allTasks);
+	}
+	
+	public List<Scheduledtask> todayTask (List<Scheduledtask>allTasks){
+		List<Scheduledtask> todayTasks = new ArrayList<Scheduledtask>();
+		for (Scheduledtask task : allTasks){
+			
+			Calendar c_today = Calendar.getInstance();
+			c_today.setTime(new Date());
+			int today_dayOfYear = c_today.get(Calendar.DAY_OF_YEAR);
+			int today_year = c_today.get(Calendar.YEAR);
+			int today = today_dayOfYear+365 * today_year;
+			
+			Calendar c_taskFromDate = Calendar.getInstance();
+			c_taskFromDate.setTime(task.getScheTask_from_time());
+			int fromDate_dayOfYear = c_taskFromDate.get(Calendar.DAY_OF_YEAR);
+			int fromDate_year = c_taskFromDate.get(Calendar.YEAR);
+			int fromDate = fromDate_year*365+ fromDate_dayOfYear;
+			
+			Calendar c_taskToDate = Calendar.getInstance();
+			c_taskToDate.setTime(task.getScheTask_to_time());
+			int toDate_dayOfYear = c_taskToDate.get(Calendar.DAY_OF_YEAR);
+			int toDate_year = c_taskToDate.get(Calendar.YEAR);
+			int toDate  = toDate_dayOfYear+toDate_year*365;
+			if (today >= fromDate && today <= toDate)
+				todayTasks.add(task);
+		}
+		
+		
+		return todayTasks;
+	}
+	
+	
 	public static void main(String[] args) {
-		StorageImpl i = new StorageImpl();
-		System.out.println(i.getFoodCaloriesOfFoodTrack(1));
+		StorageImpl st = new StorageImpl();
+		System.out.println(st.getTasksTodayByUserId(1).size());
 	}
 
 	
